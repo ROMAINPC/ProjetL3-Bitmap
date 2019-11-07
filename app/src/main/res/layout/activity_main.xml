@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.MainActivity">
+
+    <TextView
+        android:id="@+id/dimensionsLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center|fill"
+        android:text="dimensions"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintVertical_weight="1"
+        app:layout_constraintBottom_toTopOf="@+id/bReset"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/operations" />
+
+    <Button
+        android:id="@+id/bReset"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:onClick="buttonClickReset"
+        android:text="Reset"
+        app:layout_constraintVertical_weight="2"
+        app:layout_constraintBottom_toTopOf="@+id/bGris"
+        app:layout_constraintEnd_toEndOf="@+id/operations"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/operations"
+        app:layout_constraintTop_toBottomOf="@+id/dimensionsLabel" />
+
+    <Button
+        android:id="@+id/bGris"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:onClick="buttonClickGray"
+        android:text="Gris"
+        app:layout_constraintVertical_weight="2"
+        app:layout_constraintBottom_toTopOf="@+id/colorLabel"
+        app:layout_constraintEnd_toStartOf="@+id/bContrast"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/operations"
+        app:layout_constraintTop_toBottomOf="@+id/bReset" />
+
+    <Button
+        android:id="@+id/bContrast"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:onClick="buttonClickContrast"
+        android:text="Contraste"
+        app:layout_constraintVertical_weight="2"
+        app:layout_constraintBottom_toTopOf="@+id/colorLabel"
+        app:layout_constraintEnd_toEndOf="@+id/operations"
+        app:layout_constraintStart_toEndOf="@+id/bGris"
+        app:layout_constraintTop_toTopOf="@+id/bGris" />
+
+    <TextView
+        android:id="@+id/colorLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Couleur :"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:gravity="center|fill"
+        app:layout_constraintVertical_weight="1"
+        app:layout_constraintBottom_toTopOf="@+id/toleranceLabel"
+        app:layout_constraintEnd_toStartOf="@+id/colorBar"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/operations"
+        app:layout_constraintTop_toBottomOf="@+id/bGris" />
+
+    <TextView
+        android:id="@+id/toleranceLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Tolérance :"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:gravity="center|fill"
+        app:layout_constraintVertical_weight="1"
+        app:layout_constraintBottom_toTopOf="@+id/bApplyColor"
+        app:layout_constraintEnd_toStartOf="@+id/toleranceBar"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/operations"
+        app:layout_constraintTop_toBottomOf="@+id/colorLabel" />
+
+    <TextView
+        android:id="@+id/hueLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Teinte :"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:gravity="center|fill"
+        app:layout_constraintVertical_weight="1"
+        app:layout_constraintBottom_toBottomOf="@+id/operations"
+        app:layout_constraintEnd_toStartOf="@+id/hueBar"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/operations"
+        app:layout_constraintTop_toBottomOf="@+id/bApplyColor" />
+
+    <SeekBar
+        android:id="@+id/colorBar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/colorLabel"
+        app:layout_constraintEnd_toEndOf="@+id/operations"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/colorLabel"
+        app:layout_constraintTop_toTopOf="@+id/colorLabel" />
+
+    <SeekBar
+        android:id="@+id/toleranceBar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/toleranceLabel"
+        app:layout_constraintEnd_toEndOf="@+id/operations"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/toleranceLabel"
+        app:layout_constraintTop_toTopOf="@+id/toleranceLabel" />
+
+    <Button
+        android:id="@+id/bApplyColor"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:onClick="buttonClickApplyColor"
+        android:text="Appliquer"
+        app:layout_constraintVertical_weight="2"
+        app:layout_constraintBottom_toTopOf="@+id/hueLabel"
+        app:layout_constraintEnd_toEndOf="@+id/operations"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/operations"
+        app:layout_constraintTop_toBottomOf="@+id/toleranceLabel" />
+
+    <SeekBar
+        android:id="@+id/hueBar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/hueLabel"
+        app:layout_constraintEnd_toEndOf="@+id/operations"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/hueLabel"
+        app:layout_constraintTop_toTopOf="@+id/hueLabel" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/operations"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_weight="3"
+        app:srcCompat="@android:drawable/btn_dialog" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/operations"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="dimensionsLabel,bGris,toleranceBar,bApplyColor,bContrast,colorLabel,toleranceLabel,colorBar,bReset,hueLabel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintVertical_weight="2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
