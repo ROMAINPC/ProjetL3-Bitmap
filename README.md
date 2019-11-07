@@ -28,6 +28,8 @@ Représente une image éditable.
 * `Effects`
 Contient des méthodes statiques, une série d'effet applicables sur des instance de `Bitmap` ou de `Picture`
 
+<img src="readme_src/app.PNG" width="150">
+
 ## Classe Picture:
 Cette classe encapsule principalement une instance de `Bitmap` mais en simplifie la manipulation.
 
