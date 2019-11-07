@@ -1,4 +1,4 @@
-#Sun Nov 03 20:43:18 CET 2019
+#Thu Nov 07 15:11:26 CET 2019
 base.0=G\:\\Pour windows\\Bureau\\Jeux et Logiciels\\Important\\Licence 3\\Projet_techno\\Projets_Android\\MyBitmap\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\out\\classes.dex
 path.1=classes.dex
 renamed.1=classes2.dex

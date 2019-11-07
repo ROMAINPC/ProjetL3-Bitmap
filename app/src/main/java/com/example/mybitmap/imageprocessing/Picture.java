@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.util.Log;
 
 import java.util.HashMap;
 
@@ -67,7 +66,7 @@ public class Picture {
         bitmap = Bitmap.createScaledBitmap(pic.getBitmap(), pic.getBitmap().getWidth() / sampleRatio, pic.getBitmap().getHeight() / sampleRatio, true);
 
         original = new int[bitmap.getWidth() * bitmap.getHeight()];
-        bitmap.getPixels(original, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+        quickSave();
     }
 
 
@@ -112,7 +111,7 @@ public class Picture {
 
         //save original:
         original = new int[bitmap.getWidth() * bitmap.getHeight()];
-        bitmap.getPixels(original, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+        quickSave();
     }
 
     /**
@@ -144,10 +143,8 @@ public class Picture {
         options.inMutable = true;
         bitmap = BitmapFactory.decodeResource(ctx.getResources(), src, options);
 
-        Log.v("LOG", options.outHeight + " " + options.outWidth);
-
         //resave original:
-        bitmap.getPixels(original, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+        quickSave();
     }
 
     /**
