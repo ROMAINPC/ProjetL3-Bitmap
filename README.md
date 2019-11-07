@@ -42,7 +42,7 @@ La méthode `reset()` permet de restaurer l'image comme elle était à son charg
 Est associé également à l'objet une liste d'histogrammes , des méthodes permettent de générer des histogrammes différents (pour l'instant l'histogramme des niveaux de gris et des niveaux de luminance).
 
 ## Effets disponibles:
-Durée d'exécution sur l'émulateur suivant : NEXUS 5X, API 25, 1080*1920 px, 420dpi. Image : 1024 x 1024 px
+Durée d'exécution sur l'émulateur suivant : NEXUS 5X, API 25, 1080*1920 px, 420dpi. Au moment du test l'image avait une dimension dans les tableaux de 1024 * 1024;
 
 ### `grayLevel()` :
 Donne une image en noir et blanc (instantané):
