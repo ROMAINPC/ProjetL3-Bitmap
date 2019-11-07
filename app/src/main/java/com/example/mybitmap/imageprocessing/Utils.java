@@ -1,6 +1,8 @@
 package com.example.mybitmap.imageprocessing;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.util.DisplayMetrics;
 
 /**
  * Class with tools for image processing.
@@ -165,6 +167,30 @@ public class Utils {
         }
         max = i;
         return new int[]{min, max};
+    }
+
+    /**
+     * Unit convertor.
+     *
+     * @param dp
+     * @param ctx
+     * @return pixels
+     */
+    public static int dpToPx(int dp, Context ctx) {
+        DisplayMetrics displayMetrics = ctx.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    /**
+     * Unit convertor
+     *
+     * @param px
+     * @param ctx
+     * @return dp
+     */
+    public static int pxToDp(int px, Context ctx) {
+        DisplayMetrics displayMetrics = ctx.getResources().getDisplayMetrics();
+        return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
 

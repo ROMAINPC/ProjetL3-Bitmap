@@ -88,11 +88,9 @@ Ne donne pas de bon résultat sur l'histogramme de luminance, à debugger ou exp
 * De même la méthode `getPixels()` ne travaille qu'avec un tableau, un même fichier chargé avec 2 méthodes différentes des classes `Bitmap` et `BitmapFactory` ne donnera pas la même image à quelques dp près, ce qui entraîne de nombreuses exception lors de l'appel à `getPixels()`.
 * L'option `inSampleSize` n'est pas non plus stable, à cause de la mauvaise gestion des unités de la librairie, sur certains appareils la limite de taille saute complètement.
 * L'exécution sur mon appareil personnel est impossible, les méthodes de `Bitmap` comme celles de `BitmapFactory.Options` pour récupérer les dimensions semblent toujours travailler avec des dp, ce qui donne une image beaucoup trop grande malgré la limite de taille.
-* Pourtant une réduction de l'image est appliquée puisque les aperçus des sliders sont pixelisés, cependant vu la latence de l'application, les matrices semblent encore ête trop grandes.
 * On notera également que au chargement d'une image petite (2x2 pixels par exemple) celle ci est chargée en taille 5x5, même en désactivant tout système de ratio.
 
 ### Améliorations possibles du code:
-* Le système d'aperçu pendant les sliders est très mauvais sur un vrai téléphone, en plus du problème d'image trop grandes, il semblerait que certaines opérations sur les tableaux prennent plus de temps.
 * Il pourrait être intéressant de sauvegarder autrement l'image, le tableau original est un tableau beaucoup trop grand. (List ?).
 * Il pourrait être intéressant de sauvegarder un historique des effets appliqués à un objet `Picture`, ou un historique des images, pour pouvoir éventuellement annuler des opérations.
 * Les histogrammes ne sont pas affectés par les effets appliqués, il faudrait donc les re-générer avant d'appliquer un nouvel effet utilisant les histogrammes.

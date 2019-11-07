@@ -15,7 +15,7 @@ import com.example.mybitmap.imageprocessing.Picture;
 public class MainActivity extends AppCompatActivity {
 
     ////////////////////// choose here picture to load ///////////////////
-    private static final int PICTURE = R.drawable.poivrons;
+    private static final int PICTURE = R.drawable.low_contrast;
     private static final int WIDTH = 0;
     private static final int HEIGHT = 1080;
 

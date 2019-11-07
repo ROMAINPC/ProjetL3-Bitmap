@@ -85,8 +85,8 @@ public class Picture {
      *
      * @param ctx       Context in which the Picture evolve.
      * @param src       Resource identifier of the picture.
-     * @param reqWidth  Required width, usefull to reduce the size of the loaded image.
-     * @param reqHeight Required height.
+     * @param reqWidth  Required width, usefull to reduce the size of the loaded image. (pixels)
+     * @param reqHeight Required height. (pixels)
      */
     public Picture(Context ctx, int src, int reqWidth, int reqHeight) {
         this.src = src;
@@ -98,9 +98,9 @@ public class Picture {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(ctx.getResources(), src, options);
 
-        sourceHeight = options.outHeight;
-        sourceWidth = options.outWidth;
-        options.inSampleSize = Utils.calculateInSampleSize(sourceWidth, sourceHeight, reqWidth, reqHeight);
+        sourceHeight = options.outHeight; //pixel value
+        sourceWidth = options.outWidth; //pixel value
+        options.inSampleSize = Utils.calculateInSampleSize(sourceWidth, sourceHeight, Utils.pxToDp(reqWidth, ctx), Utils.pxToDp(reqHeight, ctx));
 
 
         //final decode:
