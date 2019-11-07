@@ -44,7 +44,7 @@ Durée d'exécution sur l'émulateur suivant : NEXUS 5X, API 25, 1080*1920 px, 4
 
 ### `grayLevel` :
 Donne une image en noir et blanc:
-![](readme_src/original.png =100x) ![](readme_src/gris.png =100x)
+<img src="readme_src/original.png" width="150"><img src="readme_src/gris.png" width="150">
 
 ## Remarques et avis:
 
