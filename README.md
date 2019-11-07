@@ -40,11 +40,58 @@ La méthode `reset()` permet de restaurer l'image comme elle était à son charg
 Est associé également à l'objet une liste d'histogrammes , des méthodes permettent de générer des histogrammes différents (pour l'instant l'histogramme des niveaux de gris et des niveaux de luminance).
 
 ## Effets disponibles:
-Durée d'exécution sur l'émulateur suivant : NEXUS 5X, API 25, 1080*1920 px, 420dpi.
+Durée d'exécution sur l'émulateur suivant : NEXUS 5X, API 25, 1080*1920 px, 420dpi. Image : 1024 x 1024 px
 
-### `grayLevel` :
-Donne une image en noir et blanc:
-<img src="readme_src/original.png" width="150"><img src="readme_src/gris.png" width="150">
+### `grayLevel()` :
+Donne une image en noir et blanc (instantané):
 
-## Remarques et avis:
+<img src="readme_src/original.PNG" width="150"><img src="readme_src/gris.PNG" width="150">
+
+`grayLevelOld()` qui utilise getPixel() est beaucoup plus long (12 secondes).
+
+### `colorize()` :
+Applique la teinte sélectionnée à l'image, en passant par l'espace HSV (2 secondes):
+
+<img src="readme_src/original.PNG" width="150"><img src="readme_src/teinte.PNG" width="150">
+
+### `keepColor()` :
+Garde les teintes dans l'intervalle sélectionné, le reste de l'image est grisé en supprimant la saturation (2 secondes):
+
+<img src="readme_src/original.PNG" width="150"><img src="readme_src/keep.PNG" width="150">
+
+Autre exemple sur le vert:
+<img src="readme_src/wheel.PNG" width="150"><img src="readme_src/wheel2.PNG" width="150">
+
+### `linearDynamicExtension()` :
+Étend la plage de valeur d'un histogramme en particulier (23 secondes, 0 si l'histogramme est déjà généré).
+Permet par exemple d'améliorer le contraste sur l'histogramme des niveaux de gris:
+
+<img src="readme_src/gris.PNG" width="150"><img src="readme_src/gris_contraste_lineaire.PNG" width="150">
+
+### `histogramFlattening()` :
+Égalise l'histogramme passé en paramètre (22 secondes, 0 si l'histogramme est déjà généré)
+Permet par exemple d'améliorer le contraste sur l'histogramme des niveaux de gris:
+
+<img src="readme_src/gris.PNG" width="150"><img src="readme_src/gris_flat.PNG" width="150">
+
+Ne donne pas de bon résultat sur l'histogramme de luminance, à debugger ou expliquer.
+
+## Remarques et avis sur le code et les librairies:
+* Si l'application rame, utilisez l'image la plus petite (poivrons), voir raisons ci dessous.
+
+### Bitmap 
+* `Bitmap` n'est pas une librairie facile d'utilisation.
+* Le chargement des images en 2 étapes est un peu étrange, de même il existe de nombreuses manières de charger un fichier dans un Bitmap.
+* Les dimensions de l'image sont très instables, il existe plusieurs méthodes pour récupérer les valeurs de largeur et de hauteur. Aucune ne précise son unité dans la documentation. Dans de très rare cas seulement cette unité est en pixels. Sinon généralement en dp, variant énormément d'un appareil à l'autre (du simple au triple).
+* De même la méthode `getPixels()` ne travaille qu'avec un tableau, un même fichier chargé avec 2 méthodes différentes des classes `Bitmap` et `BitmapFactory` ne donnera pas la même image à quelques dp près, ce qui entraîne de nombreuses exception lors de l'appel à `getPixels()`.
+* L'option `inSampleSize` n'est pas non plus stable, à cause de la mauvaise gestion des unités de la librairie, sur certains appareils la limite de taille saute complètement.
+* L'exécution sur mon appareil personnel est impossible, les méthodes de `Bitmap` comme celles de `BitmapFactory.Options` pour récupérer les dimensions semblent toujours travailler avec des dp, ce qui donne une image beaucoup trop grande malgré la limite de taille.
+* Pourtant une réduction de l'image est appliquée puisque les aperçus des sliders sont pixelisés, cependant vu la latence de l'application, les matrices semblent encore ête trop grandes.
+* On notera également que au chargement d'une image petite (2x2 pixels par exemple) celle ci est chargée en taille 5x5, même en désactivant tout système de ratio.
+
+### Améliorations possibles du code:
+* Le système d'aperçu pendant les sliders est très mauvais sur un vrai téléphone, en plus du problème d'image trop grandes, il semblerait que certaines opérations sur les tableaux prennent plus de temps.
+* Il pourrait être intéressant de sauvegarder autrement l'image, le tableau original est un tableau beaucoup trop grand. (List ?).
+* Il pourrait être intéressant de sauvegarder un historique des effets appliqués à un objet `Picture`, ou un historique des images, pour pouvoir éventuellement annuler des opérations.
+* Les histogrammes ne sont pas affectés par les effets appliqués, il faudrait donc les re-générer avant d'appliquer un nouvel effet utilisant les histogrammes.
 
