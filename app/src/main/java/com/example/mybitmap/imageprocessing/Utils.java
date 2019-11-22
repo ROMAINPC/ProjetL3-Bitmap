@@ -6,8 +6,6 @@ import android.util.DisplayMetrics;
 
 /**
  * Class with tools for image processing.
- *
- * @author Romain Pigret-Cadou
  */
 public class Utils {
 

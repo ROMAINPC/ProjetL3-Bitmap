@@ -9,7 +9,6 @@ import java.util.Random;
 /**
  * Class with methods to apply effects on Bitmap pictures.
  *
- * @author Romain Pigret-Cadou
  * @see android.graphics.Bitmap
  */
 public class Effects {
