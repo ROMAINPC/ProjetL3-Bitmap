@@ -1,8 +1,10 @@
 package com.example.mybitmap.activities;
 
 import android.os.Bundle;
-import android.renderscript.Allocation;
-import android.renderscript.RenderScript;
+
+import androidx.renderscript.Allocation;
+import androidx.renderscript.RenderScript;
+
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -13,11 +15,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.mybitmap.R;
 import com.example.mybitmap.imageprocessing.Effects;
 import com.example.mybitmap.imageprocessing.Picture;
+import com.example.mybitmap.imageprocessing.RSEffects;
+import com.example.mybitmap.imageprocessing.rsclass.ScriptC_gray;
 
 public class MainActivity extends AppCompatActivity {
 
     ////////////////////// choose here picture to load ///////////////////
-    private static final int PICTURE = R.drawable.low_contrast;
+    private static final int PICTURE = R.drawable.grande;
     private static final int WIDTH = 0;
     private static final int HEIGHT = 1080;
 
@@ -38,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean contrast;
 
 
+    RenderScript rs;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,16 +63,12 @@ public class MainActivity extends AppCompatActivity {
         TextView tV = findViewById(R.id.dimensionsLabel);
         String text = "Dimensions : " + picture.getWidth() + " " + picture.getHeight();
         tV.setText(text);
-/*
 
-        RenderScript rs = RenderScript.create(this);
-        Allocation input = Allocation.createFromBitmap(rs, picture.getBitmap());
-        Allocation output= Allocation.createTyped(rs, input.getType());
-        ScriptC_gray grayScript = new ScriptC_gray(rs);
-//4) Copier les donnees dans les Allocations // ... //5) Initialiser les variables globales potentielles // ...
-//grayScript.forEach_toGray(input , output);
-//output.copyTo(bmp);
-//input.destroy(); output.destroy(); grayScript.destroy(); rs.destroy();*/
+
+        //generateRenderScript
+        rs = RenderScript.create(this);
+        picture.setRenderScript(rs);
+        pictureSample.setRenderScript(rs);
 
 
         //Listeners:
@@ -191,6 +194,11 @@ public class MainActivity extends AppCompatActivity {
             contrast = true;
         }
 
+    }
+
+    protected void onStop() {
+        super.onStop();
+        rs.destroy();
     }
 
 

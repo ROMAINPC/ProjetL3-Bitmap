@@ -1,6 +1,5 @@
 #pragma version(1)
-#pragma rs
-java_package_name(com.example.mybitmap)
+#pragma rs java_package_name(com.example.mybitmap.imageprocessing.rsclass)
 
 uchar4 RS_KERNEL gray(uchar4 in) {
 

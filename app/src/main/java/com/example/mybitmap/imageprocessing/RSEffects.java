@@ -1,30 +1,49 @@
 package com.example.mybitmap.imageprocessing;
 
-import android.graphics.Bitmap;
-import  android.renderscript.Allocation;
-import android.renderscript.RenderScript;
+
+import com.example.mybitmap.imageprocessing.rsclass.ScriptC_gray;
+
+import androidx.renderscript.Allocation;
+import androidx.renderscript.ScriptC;
 
 /**
- * Class with methods to apply effects on Bitmap pictures using Renderscript library.
+ * Class with methods to apply effects on Pictures using Renderscript library.
  *
  * @see android.graphics.Bitmap
  */
 public class RSEffects {
+
+
+    public enum RSEffect {
+        GRAY_LEVEL
+    }
+
     /**
-     * Apply effect on the bitmap picture passed in parameter: put the picture in gray level, using
-     * this formule : Gray = 0.3 * RED + 0.59 * BLUE + 0.11 * GREEN
+     * Apply the selected effect on a Picture by using RenderScript.
+     * An instance of RenderScript must be passed to the picture before, else this function do nothing.
      *
-     * @param bmp
+     * @param picture
+     * @param effectType
      */
-    public static void grayLevel(Bitmap bmp) {
-
+    public static void effect(Picture picture, RSEffect effectType) {
+        if (picture.getRenderScript() == null)
+            return;
+        Allocation input = Allocation.createFromBitmap(picture.getRenderScript(), picture.getBitmap());
+        Allocation output = Allocation.createTyped(picture.getRenderScript(), input.getType());
+        ScriptC script = null;
+        switch (effectType) {
+            case GRAY_LEVEL:
+                script = new ScriptC_gray(picture.getRenderScript());
+                ((ScriptC_gray) script).forEach_gray(input, output);
+                break;
+        }
+        output.copyTo(picture.getBitmap());
+        input.destroy();
+        output.destroy();
+        script.destroy();
 
     }
 
-    /**
-     * See {@link #grayLevel(Bitmap)} method
-     */
-    public static void grayLevel(Picture p) {
-        grayLevel(p.getBitmap());
-    }
+
 }
+

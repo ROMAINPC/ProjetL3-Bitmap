@@ -7,6 +7,8 @@ import android.graphics.Color;
 
 import java.util.HashMap;
 
+import androidx.renderscript.RenderScript;
+
 /**
  * Class to manage an Picture, this class wrap a Bitmap instance and several others informations about the image.
  */
@@ -30,6 +32,8 @@ public class Picture {
     private int[] original;
 
     private HashMap<Histogram, int[]> histograms = new HashMap<>();
+
+    private RenderScript renderScript;
 
     /**
      * Just copy a Picture instance.
@@ -236,4 +240,21 @@ public class Picture {
         histograms.put(type, histogram);
     }
 
+    /**
+     * RenderScript must be setted.
+     *
+     * @return RenderScript associated with the Picture
+     */
+    public RenderScript getRenderScript() {
+        return renderScript;
+    }
+
+    /**
+     * To use RenderScript functions on Picture you need to associated a RenderScript instance to the picture, Instantiate it from a Context class (or extended classes)
+     *
+     * @param renderScript
+     */
+    public void setRenderScript(RenderScript renderScript) {
+        this.renderScript = renderScript;
+    }
 }
