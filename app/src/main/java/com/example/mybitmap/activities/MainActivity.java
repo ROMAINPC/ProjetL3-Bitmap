@@ -1,6 +1,8 @@
 package com.example.mybitmap.activities;
 
 import android.os.Bundle;
+import android.renderscript.Allocation;
+import android.renderscript.RenderScript;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -54,6 +56,16 @@ public class MainActivity extends AppCompatActivity {
         TextView tV = findViewById(R.id.dimensionsLabel);
         String text = "Dimensions : " + picture.getWidth() + " " + picture.getHeight();
         tV.setText(text);
+/*
+
+        RenderScript rs = RenderScript.create(this);
+        Allocation input = Allocation.createFromBitmap(rs, picture.getBitmap());
+        Allocation output= Allocation.createTyped(rs, input.getType());
+        ScriptC_gray grayScript = new ScriptC_gray(rs);
+//4) Copier les donnees dans les Allocations // ... //5) Initialiser les variables globales potentielles // ...
+//grayScript.forEach_toGray(input , output);
+//output.copyTo(bmp);
+//input.destroy(); output.destroy(); grayScript.destroy(); rs.destroy();*/
 
 
         //Listeners:
