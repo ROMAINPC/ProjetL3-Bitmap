@@ -1,14 +1,24 @@
 package com.example.mybitmap.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.renderscript.Allocation;
 import androidx.renderscript.RenderScript;
 
+import android.text.Layout;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,12 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private Picture pictureSample;
 
     private ImageView iv;
-    private SeekBar colorBar;
-    private SeekBar toleranceBar;
-    private boolean gray;
-    private boolean keepColor;
-    private boolean colorize;
-    private boolean contrast;
 
 
     RenderScript rs;
@@ -59,11 +63,6 @@ public class MainActivity extends AppCompatActivity {
         //pictureSample = new Picture(picture, SAMPLE_SIZE, 0);
         pictureSample = new Picture(getApplicationContext(), PICTURE, SAMPLE_SIZE, 0);
 
-        //draw dimensions:
-        TextView tV = findViewById(R.id.dimensionsLabel);
-        String text = "Dimensions : " + picture.getWidth() + " " + picture.getHeight();
-        tV.setText(text);
-
 
         //generateRenderScript
         rs = RenderScript.create(this);
@@ -71,6 +70,48 @@ public class MainActivity extends AppCompatActivity {
         pictureSample.setRenderScript(rs);
 
 
+        //UI and layouts:
+        //default bottom layout:
+        FrameLayout under = findViewById(R.id.underPicture);
+        View layout = View.inflate(this,R.layout.effects_list, null);
+        under.addView(layout);
+
+        //draw dimensions:
+        TextView tV = under.findViewById(R.id.dimensionsLabel);
+        String text = "Dimensions : " + picture.getWidth() + " x " + picture.getHeight() + " (dp)";
+        tV.setText(text);
+
+
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+/*
+                RelativeLayout llDisplayData;
+                LinearLayout llChangeBG;
+                TextView tvtxt;
+
+                llDisplayData = (RelativeLayout) findViewById(R.id.underPicture);
+                LayoutInflater linflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View customView;
+
+                llDisplayData.removeAllViews();
+
+                customView = linflater.inflate(R.layout.effects_list, null);
+
+
+
+
+                llDisplayData.removeAllViews();*/
+            }
+        });
+
+
+
+
+
+
+
+/*
         //Listeners:
         colorBar = findViewById(R.id.colorBar);
         colorBar.setMax(359);
@@ -151,11 +192,11 @@ public class MainActivity extends AppCompatActivity {
                     colorize = true;
                 }
             }
-        });
+        });*/
 
 
     }
-
+/*
     public void buttonClickReset(View view) {
         gray = false;
         keepColor = false;
@@ -194,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
             contrast = true;
         }
 
-    }
+    }*/
 
     protected void onStop() {
         super.onStop();
