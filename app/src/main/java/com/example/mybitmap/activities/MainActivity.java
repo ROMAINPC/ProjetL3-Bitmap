@@ -1,32 +1,17 @@
 package com.example.mybitmap.activities;
 
-import android.content.Context;
 import android.os.Bundle;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.renderscript.Allocation;
-import androidx.renderscript.RenderScript;
-
-import android.text.Layout;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.renderscript.RenderScript;
 
 import com.example.mybitmap.R;
-import com.example.mybitmap.imageprocessing.Effects;
 import com.example.mybitmap.imageprocessing.Picture;
-import com.example.mybitmap.imageprocessing.RSEffects;
-import com.example.mybitmap.imageprocessing.rsclass.ScriptC_gray;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,19 +19,18 @@ public class MainActivity extends AppCompatActivity {
     private static final int PICTURE = R.drawable.grande;
     private static final int WIDTH = 0;
     private static final int HEIGHT = 1080;
-
-
     private static final int SAMPLE_SIZE = 200;
 
 
     // private Bitmap bitmap;
     private Picture picture;
     private Picture pictureSample;
-
     private ImageView iv;
-
-
     RenderScript rs;
+
+    private FrameLayout underLayout;
+    private View effectsLayout;
+    private View effectSettingsLayout;
 
 
     @Override
@@ -72,47 +56,22 @@ public class MainActivity extends AppCompatActivity {
 
         //UI and layouts:
         //default bottom layout:
-        FrameLayout under = findViewById(R.id.underPicture);
-        View layout = View.inflate(this,R.layout.effects_list, null);
-        under.addView(layout);
+        underLayout = findViewById(R.id.underPicture);
+        effectsLayout = View.inflate(this, R.layout.effects_list, null);
+        effectSettingsLayout = View.inflate(this, R.layout.effect_sliders, null);
+        underLayout.removeAllViews();
+        underLayout.addView(effectsLayout);
 
         //draw dimensions:
-        TextView tV = under.findViewById(R.id.dimensionsLabel);
+        TextView tV = underLayout.findViewById(R.id.dimensionsLabel);
         String text = "Dimensions : " + picture.getWidth() + " x " + picture.getHeight() + " (dp)";
         tV.setText(text);
 
 
-        iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-/*
-                RelativeLayout llDisplayData;
-                LinearLayout llChangeBG;
-                TextView tvtxt;
-
-                llDisplayData = (RelativeLayout) findViewById(R.id.underPicture);
-                LayoutInflater linflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View customView;
-
-                llDisplayData.removeAllViews();
-
-                customView = linflater.inflate(R.layout.effects_list, null);
-
-
-
-
-                llDisplayData.removeAllViews();*/
-            }
-        });
-
-
-
-
-
 
 
 /*
-        //Listeners:
+
         colorBar = findViewById(R.id.colorBar);
         colorBar.setMax(359);
         colorBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -237,6 +196,40 @@ public class MainActivity extends AppCompatActivity {
 
     }*/
 
+    /**
+     * Click handler for effects buttons.
+     *
+     * @param v Button which call the method
+     */
+    public void onClickEffect(View v) {
+        //Change layout:
+        underLayout.removeAllViews();
+        underLayout.addView(effectSettingsLayout);
+    }
+
+    /**
+     * Click handler for back button in effects settings.
+     *
+     * @param v
+     */
+    public void clickBack(View v) {
+        //Change layout:
+        underLayout.removeAllViews();
+        underLayout.addView(effectsLayout);
+    }
+
+    /**
+     * Click handler for apply button in effects settings.
+     *
+     * @param v
+     */
+    public void clickApply(View v) {
+        //Change layout:
+        underLayout.removeAllViews();
+        underLayout.addView(effectsLayout);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         rs.destroy();

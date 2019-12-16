@@ -69,6 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="onClickEffect"
                 android:text="Gris" />
 
             <Button
@@ -76,6 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="onClickEffect"
                 android:text="Couleur" />
 
             <Button
@@ -83,6 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="onClickEffect"
                 android:text="Teinte" />
 
             <Button
@@ -90,6 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="onClickEffect"
                 android:text="Contraste 1" />
 
             <Button
@@ -97,6 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="onClickEffect"
                 android:text="Contraste 2" />
 
         </LinearLayout>
