@@ -68,7 +68,6 @@ public class Picture {
 
         //generate bitmap:
         bitmap = Bitmap.createScaledBitmap(pic.getBitmap(), pic.getBitmap().getWidth() / sampleRatio, pic.getBitmap().getHeight() / sampleRatio, true);
-
         original = new int[bitmap.getWidth() * bitmap.getHeight()];
         quickSave();
     }
@@ -104,8 +103,7 @@ public class Picture {
 
         sourceHeight = options.outHeight; //pixel value
         sourceWidth = options.outWidth; //pixel value
-        options.inSampleSize = Utils.calculateInSampleSize(sourceWidth, sourceHeight, Utils.pxToDp(reqWidth, ctx), Utils.pxToDp(reqHeight, ctx));
-
+        options.inSampleSize = Utils.calculateInSampleSize(sourceWidth, sourceHeight, reqWidth, reqHeight);
 
         //final decode:
         options.inJustDecodeBounds = false;

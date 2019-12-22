@@ -129,16 +129,10 @@ public class Utils {
         final int width = originalWidth;
         int inSampleSize = 1;
 
-        if (height > reqHeight || width > reqWidth) {
-
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) >= reqHeight
-                    && (halfWidth / inSampleSize) >= reqWidth) {
-                inSampleSize *= 2;
-            }
+        // Found smallest SampleSize value which keep both with and height inferior of required size.
+        while ((height / inSampleSize) >= reqHeight
+                || (width / inSampleSize) >= reqWidth) {
+            inSampleSize *= 2;
         }
 
         return inSampleSize;
@@ -165,30 +159,6 @@ public class Utils {
         }
         max = i;
         return new int[]{min, max};
-    }
-
-    /**
-     * Unit convertor.
-     *
-     * @param dp
-     * @param ctx
-     * @return pixels
-     */
-    public static int dpToPx(int dp, Context ctx) {
-        DisplayMetrics displayMetrics = ctx.getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-    }
-
-    /**
-     * Unit convertor
-     *
-     * @param px
-     * @param ctx
-     * @return dp
-     */
-    public static int pxToDp(int px, Context ctx) {
-        DisplayMetrics displayMetrics = ctx.getResources().getDisplayMetrics();
-        return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
 

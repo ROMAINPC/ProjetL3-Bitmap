@@ -15,9 +15,9 @@ import com.example.mybitmap.imageprocessing.Picture;
 public class MainActivity extends AppCompatActivity {
 
     ////////////////////// CHOOSE HERE PICTURE TO LOAD ///////////////////
-    private static final int PICTURE = R.drawable.grande_verticale;
-    private static final int MAX_SIZE = 2048;
-    private static final int SAMPLE_SIZE = 200;
+    private static final int PICTURE = R.drawable.grande;
+    private static final int MAX_SIZE = 3072;
+    private static final int SAMPLE_SIZE = 384;
 
 
     // private Bitmap bitmap;
