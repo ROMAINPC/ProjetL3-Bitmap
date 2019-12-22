@@ -25,8 +25,6 @@ public class Picture {
     private int src;
     private Context ctx;
 
-    private int width;
-    private int height;
     private int sourceWidth;
     private int sourceHeight;
     private int[] original;
@@ -39,7 +37,6 @@ public class Picture {
      * Just copy a Picture instance.
      *
      * @param pic
-     * @deprecated
      */
     public Picture(Picture pic) {
         this(pic, 0, 0);
@@ -51,25 +48,26 @@ public class Picture {
      * @param pic          Picture to copy.
      * @param newReqHeight New size of the new picture.
      * @param newReqWidth  New size of the new picture.
-     * @deprecated Still small unit bug, don't use, there are risks when using "reset" after.
      */
     public Picture(Picture pic, int newReqWidth, int newReqHeight) {
         this.src = pic.getSource();
         this.ctx = pic.ctx;
-        options = new BitmapFactory.Options();
 
         //generate empty bitmap:
         sourceHeight = pic.getsourceHeight();
         sourceWidth = pic.getsourceWidth();
 
         int sampleRatio = Utils.calculateInSampleSize(sourceWidth, sourceHeight, newReqWidth, newReqHeight);
-        height = sourceHeight / sampleRatio;
-        width = sourceWidth / sampleRatio;
 
         //generate bitmap:
-        bitmap = Bitmap.createScaledBitmap(pic.getBitmap(), pic.getBitmap().getWidth() / sampleRatio, pic.getBitmap().getHeight() / sampleRatio, true);
+        bitmap = Bitmap.createScaledBitmap(pic.getBitmap(), sourceWidth / sampleRatio, sourceHeight / sampleRatio, false);
         original = new int[bitmap.getWidth() * bitmap.getHeight()];
         quickSave();
+
+        //set option for eventual reload:
+        options = new BitmapFactory.Options();
+        options.inMutable = true;
+        options.inSampleSize = sampleRatio;
     }
 
 
@@ -108,8 +106,6 @@ public class Picture {
         //final decode:
         options.inJustDecodeBounds = false;
         bitmap = BitmapFactory.decodeResource(ctx.getResources(), src, options);
-        height = options.outHeight;
-        width = options.outWidth;
 
         //save original:
         original = new int[bitmap.getWidth() * bitmap.getHeight()];
@@ -153,14 +149,14 @@ public class Picture {
      * @return Width in pixels.
      */
     public int getWidth() {
-        return width;
+        return bitmap.getWidth();
     }
 
     /**
      * @return Height in pixels.
      */
     public int getHeight() {
-        return height;
+        return bitmap.getHeight();
     }
 
     /**

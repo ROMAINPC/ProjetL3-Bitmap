@@ -3,6 +3,7 @@ package com.example.mybitmap.imageprocessing;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 /**
  * Class with tools for image processing.
@@ -112,17 +113,17 @@ public class Utils {
 
     /**
      * Function to calculate integer to load sample of an image.
-     * See <a href="https://developer.android.com/topic/performance/graphics/load-bitmap">Loading large bitmaps</a>
+     * If required width or height is set to zero, the value returned will be 1.
      *
      * @param originalWidth  Width of the orignal picture.
      * @param originalHeight Height of the orignal picture.
      * @param reqWidth       The desired width for the sample.
      * @param reqHeight      The desired width for the sample.
-     * @return An integer corresponding to the nearest power of 2 near X, so it takes X*X pixels to make 1 pixel in the sample.
+     * @return An integer X corresponding to the smallest power of 2 keeping size inferior or equal to the required size, where it takes X*X pixels to make 1 pixel in the sample.
      */
     public static int calculateInSampleSize(int originalWidth, int originalHeight,
                                             int reqWidth, int reqHeight) {
-        if (reqWidth <= 0 && reqHeight <= 0)
+        if (reqWidth <= 0 || reqHeight <= 0)
             return 1;
         // Raw height and width of image
         final int height = originalHeight;
@@ -130,6 +131,7 @@ public class Utils {
         int inSampleSize = 1;
 
         // Found smallest SampleSize value which keep both with and height inferior of required size.
+
         while ((height / inSampleSize) >= reqHeight
                 || (width / inSampleSize) >= reqWidth) {
             inSampleSize *= 2;

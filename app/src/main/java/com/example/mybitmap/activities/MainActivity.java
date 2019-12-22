@@ -42,9 +42,7 @@ public class MainActivity extends AppCompatActivity {
         iv.setImageBitmap(picture.getBitmap());
 
         //load bad quality picture for previews:
-        //pictureSample = new Picture(picture, SAMPLE_SIZE, 0);
-        pictureSample = new Picture(getApplicationContext(), PICTURE, SAMPLE_SIZE, SAMPLE_SIZE);
-
+        pictureSample = new Picture(picture, SAMPLE_SIZE, SAMPLE_SIZE);
 
         //generateRenderScript
         rs = RenderScript.create(this);
