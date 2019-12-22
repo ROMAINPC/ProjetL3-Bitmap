@@ -1,7 +1,6 @@
 package com.example.mybitmap.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -15,10 +14,9 @@ import com.example.mybitmap.imageprocessing.Picture;
 
 public class MainActivity extends AppCompatActivity {
 
-    ////////////////////// choose here picture to load ///////////////////
-    private static final int PICTURE = R.drawable.grande;
-    private static final int WIDTH = 0;
-    private static final int HEIGHT = 1080;
+    ////////////////////// CHOOSE HERE PICTURE TO LOAD ///////////////////
+    private static final int PICTURE = R.drawable.grande_verticale;
+    private static final int MAX_SIZE = 2048;
     private static final int SAMPLE_SIZE = 200;
 
 
@@ -39,13 +37,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Load picture:
-        picture = new Picture(getApplicationContext(), PICTURE, WIDTH, HEIGHT);
+        picture = new Picture(getApplicationContext(), PICTURE, MAX_SIZE, MAX_SIZE);
         iv = findViewById(R.id.imageView);
         iv.setImageBitmap(picture.getBitmap());
 
         //load bad quality picture for previews:
         //pictureSample = new Picture(picture, SAMPLE_SIZE, 0);
-        pictureSample = new Picture(getApplicationContext(), PICTURE, SAMPLE_SIZE, 0);
+        pictureSample = new Picture(getApplicationContext(), PICTURE, SAMPLE_SIZE, SAMPLE_SIZE);
 
 
         //generateRenderScript
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         //draw dimensions:
         TextView tV = underLayout.findViewById(R.id.dimensionsLabel);
-        String text = "Dimensions : " + picture.getWidth() + " x " + picture.getHeight() + " (dp)";
+        String text = "Dimensions : " + picture.getWidth() + " x " + picture.getHeight() + " px";
         tV.setText(text);
 
 
