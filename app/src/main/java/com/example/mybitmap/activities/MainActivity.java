@@ -1,7 +1,6 @@
 package com.example.mybitmap.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -12,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.renderscript.RenderScript;
 
 import com.example.mybitmap.R;
+import com.example.mybitmap.imageprocessing.Effects;
 import com.example.mybitmap.imageprocessing.Picture;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout underLayout;
     private View effectsLayout;
     private View effectSettingsLayout;
+    private Effects.EffectType currentEffect;
 
 
     @Override
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         effectSettingsLayout = View.inflate(this, R.layout.effect_sliders, null);
         underLayout.removeAllViews();
         underLayout.addView(effectsLayout);
+        currentEffect = null;
 
         //draw dimensions:
         TextView tV = underLayout.findViewById(R.id.dimensionsLabel);
@@ -203,19 +205,29 @@ public class MainActivity extends AppCompatActivity {
 
         // assign seekbars:
         switch (v.getId()) {
+            case R.id.bGray:
+                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
+                currentEffect = Effects.EffectType.GRAY;
+                break;
             case R.id.bColor:
-                setSeekBars(true, "Teinte:", 360, true, "Tolérance:", 360, false, "", 100);
+                setSeekBars(true, "Teinte:", 359, true, "Tolérance:", 179, false, "", 100);
+                currentEffect = Effects.EffectType.KEEP_COLOR;
                 break;
             case R.id.bHue:
-                setSeekBars(true, "Teinte:", 360, false, "", 100, false, "", 100);
+                setSeekBars(true, "Teinte:", 359, false, "", 100, false, "", 100);
+                currentEffect = Effects.EffectType.HUE;
                 break;
-            case R.id.bGray:
             case R.id.bLinearContrast:
+                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
+                currentEffect = Effects.EffectType.LINEAR_EXTENSION;
+                break;
             case R.id.bFlatteningContrast:
                 setSeekBars(false, "", 100, false, "", 100, false, "", 100);
+                currentEffect = Effects.EffectType.FLATTENING;
                 break;
         }
-
+        pictureSample.quickSave();
+        iv.setImageBitmap(pictureSample.getBitmap());
         //Change layout:
         underLayout.removeAllViews();
         underLayout.addView(effectSettingsLayout);
@@ -247,8 +259,11 @@ public class MainActivity extends AppCompatActivity {
      */
     public void clickBack(View v) {
         //Change layout:
+        pictureSample.quickLoad();
+        iv.setImageBitmap(picture.getBitmap());
         underLayout.removeAllViews();
         underLayout.addView(effectsLayout);
+        currentEffect = null;
     }
 
     /**
@@ -257,9 +272,40 @@ public class MainActivity extends AppCompatActivity {
      * @param v
      */
     public void clickApply(View v) {
+        SeekBar sB1 = effectSettingsLayout.findViewById(R.id.seekBar1);
+        SeekBar sB2 = effectSettingsLayout.findViewById(R.id.seekBar2);
+        //SeekBar sB3 = effectSettingsLayout.findViewById(R.id.seekBar3);
+
+        //Apply effect:
+        switch (currentEffect) {
+            case GRAY:
+                Effects.grayLevel(picture);
+                Effects.grayLevel(pictureSample);
+                break;
+            case HUE:
+                Effects.colorize(picture, sB1.getProgress());
+                Effects.colorize(pictureSample, sB1.getProgress());
+                break;
+            case KEEP_COLOR:
+                Effects.keepColor(picture, sB1.getProgress(), sB2.getProgress());
+                Effects.keepColor(pictureSample, sB1.getProgress(), sB2.getProgress());
+                break;
+            case LINEAR_EXTENSION:
+                Effects.linearDynamicExtension(picture, Picture.Histogram.LUMINANCE);
+                Effects.linearDynamicExtension(pictureSample, Picture.Histogram.LUMINANCE);
+                break;
+            case FLATTENING:
+                Effects.histogramFlattening(picture, Picture.Histogram.LUMINANCE);
+                Effects.histogramFlattening(pictureSample, Picture.Histogram.LUMINANCE);
+                break;
+        }
+        pictureSample.quickLoad();
+        iv.setImageBitmap(picture.getBitmap());
+
         //Change layout:
         underLayout.removeAllViews();
         underLayout.addView(effectsLayout);
+        currentEffect = null;
     }
 
     @Override

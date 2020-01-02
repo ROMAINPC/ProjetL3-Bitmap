@@ -14,6 +14,9 @@ import androidx.renderscript.RenderScript;
  */
 public class Picture {
 
+    /**
+     * Enumeration of several types of Histograms
+     */
     public enum Histogram {
         LUMINANCE,
         GRAY_LEVEL_NATURAL

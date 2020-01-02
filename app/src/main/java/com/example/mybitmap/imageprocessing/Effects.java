@@ -3,8 +3,6 @@ package com.example.mybitmap.imageprocessing;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import java.util.Random;
-
 
 /**
  * Class with methods to apply effects on Bitmap pictures.
@@ -13,8 +11,16 @@ import java.util.Random;
  */
 public class Effects {
 
-
-    private static Random random = new Random();
+    /**
+     * Enumeration of all effects type.
+     */
+    public enum EffectType {
+        GRAY,
+        HUE,
+        KEEP_COLOR,
+        LINEAR_EXTENSION,
+        FLATTENING
+    }
 
     /**
      * @param bmp
