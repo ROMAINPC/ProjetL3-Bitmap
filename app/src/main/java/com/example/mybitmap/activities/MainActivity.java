@@ -1,9 +1,11 @@
 package com.example.mybitmap.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -198,10 +200,45 @@ public class MainActivity extends AppCompatActivity {
      * @param v Button which call the method
      */
     public void onClickEffect(View v) {
+
+        // assign seekbars:
+        switch (v.getId()) {
+            case R.id.bColor:
+                setSeekBars(true, "Teinte:", 360, true, "Tolérance:", 360, false, "", 100);
+                break;
+            case R.id.bHue:
+                setSeekBars(true, "Teinte:", 360, false, "", 100, false, "", 100);
+                break;
+            case R.id.bGray:
+            case R.id.bLinearContrast:
+            case R.id.bFlatteningContrast:
+                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
+                break;
+        }
+
         //Change layout:
         underLayout.removeAllViews();
         underLayout.addView(effectSettingsLayout);
     }
+
+    private void setSeekBars(boolean visible1, String name1, int max1, boolean visible2, String name2, int max2, boolean visible3, String name3, int max3) {
+        SeekBar sB1 = effectSettingsLayout.findViewById(R.id.seekBar1);
+        TextView tV1 = effectSettingsLayout.findViewById(R.id.textView1);
+        SeekBar sB2 = effectSettingsLayout.findViewById(R.id.seekBar2);
+        TextView tV2 = effectSettingsLayout.findViewById(R.id.textView2);
+        SeekBar sB3 = effectSettingsLayout.findViewById(R.id.seekBar3);
+        TextView tV3 = effectSettingsLayout.findViewById(R.id.textView3);
+        sB1.setVisibility(visible1 ? View.VISIBLE : View.INVISIBLE);
+        sB1.setMax(max1);
+        tV1.setText(name1);
+        sB2.setVisibility(visible2 ? View.VISIBLE : View.INVISIBLE);
+        sB1.setMax(max2);
+        tV2.setText(name2);
+        sB3.setVisibility(visible3 ? View.VISIBLE : View.INVISIBLE);
+        sB1.setMax(max3);
+        tV3.setText(name3);
+    }
+
 
     /**
      * Click handler for back button in effects settings.
