@@ -28,6 +28,7 @@ public class Picture {
     private int sourceWidth;
     private int sourceHeight;
     private int[] original;
+    private int[] save;
 
     private HashMap<Histogram, int[]> histograms = new HashMap<>();
 
@@ -62,7 +63,7 @@ public class Picture {
         //generate bitmap:
         bitmap = Bitmap.createScaledBitmap(pic.getBitmap(), sourceWidth / sampleRatio, sourceHeight / sampleRatio, false);
         original = new int[bitmap.getWidth() * bitmap.getHeight()];
-        quickSave();
+        bitmap.getPixels(original, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
         //set option for eventual reload:
         options = new BitmapFactory.Options();
@@ -109,25 +110,36 @@ public class Picture {
 
         //save original:
         original = new int[bitmap.getWidth() * bitmap.getHeight()];
-        quickSave();
+        bitmap.getPixels(original, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
     }
 
     /**
-     * Reset all pixels to the last quicksave values, keeping required dimensions.
+     * Reset all pixels to the loaded version of the bitmap, keeping required dimensions.
      */
     public void reset() {
         bitmap.setPixels(original, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
     }
 
     /**
-     * Save the current state of the picture (erase last quicksave)
+     * Reset all pixels to the last quicksave values.
      */
-    public void quickSave() {
-        bitmap.getPixels(original, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+    public void quickLoad() {
+        if (save != null)
+            bitmap.setPixels(save, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
     }
 
     /**
-     * Similar to reset() but re read source file to fully reset the picture, even though there have been quicksaves.
+     * Save the current state of the picture (erase last quicksave). Remember original version is already stocked in memory and you can use {@link #reset()}.
+     * First call to quicksave will create a new copy of all pixels in  memory.
+     */
+    public void quickSave() {
+        if (save == null)
+            save = new int[bitmap.getWidth() * bitmap.getHeight()];
+        bitmap.getPixels(save, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+    }
+
+    /**
+     * Full reload of the bitmap from file.
      */
     public void reload() {
 
@@ -142,7 +154,7 @@ public class Picture {
         bitmap = BitmapFactory.decodeResource(ctx.getResources(), src, options);
 
         //resave original:
-        quickSave();
+        bitmap.getPixels(original, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
     }
 
     /**
