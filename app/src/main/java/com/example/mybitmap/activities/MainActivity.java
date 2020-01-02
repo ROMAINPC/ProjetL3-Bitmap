@@ -155,46 +155,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-/*
-    public void buttonClickReset(View view) {
-        gray = false;
-        keepColor = false;
-        colorize = false;
-        contrast = false;
+
+    /**
+     * Called when click on "Réinitialiser" button.
+     */
+    public void clickReset(View view) {
         picture.reset();
-        pictureSample.reload();
+        pictureSample.reset();
     }
-
-    public void buttonClickGray(View view) {
-        if (!gray) {
-            Effects.grayLevel(picture);
-            Effects.grayLevel(pictureSample);
-            pictureSample.quickSave();
-            gray = true;
-        }
-    }
-
-    public void buttonClickApplyColor(View view) {
-        if (!keepColor) {
-            Effects.keepColor(picture, colorBar.getProgress(), toleranceBar.getProgress());
-            Effects.keepColor(pictureSample, colorBar.getProgress(), toleranceBar.getProgress());
-            pictureSample.quickSave();
-            keepColor = true;
-        }
-    }
-
-
-    public void buttonClickContrast(View view) {
-
-        if (!contrast) {
-            Picture.Histogram type = gray ? Picture.Histogram.GRAY_LEVEL_NATURAL : Picture.Histogram.LUMINANCE;
-            Effects.histogramFlattening(picture, type);
-            Effects.histogramFlattening(pictureSample, type);
-            pictureSample.quickSave();
-            contrast = true;
-        }
-
-    }*/
 
     /**
      * Click handler for effects buttons.
@@ -233,6 +201,19 @@ public class MainActivity extends AppCompatActivity {
         underLayout.addView(effectSettingsLayout);
     }
 
+    /**
+     * Enter for each of the three Seekbars, a boolean to set it visible, the text to print near the Seekbar, and the range value.
+     *
+     * @param visible1
+     * @param name1
+     * @param max1
+     * @param visible2
+     * @param name2
+     * @param max2
+     * @param visible3
+     * @param name3
+     * @param max3
+     */
     private void setSeekBars(boolean visible1, String name1, int max1, boolean visible2, String name2, int max2, boolean visible3, String name3, int max3) {
         SeekBar sB1 = effectSettingsLayout.findViewById(R.id.seekBar1);
         TextView tV1 = effectSettingsLayout.findViewById(R.id.textView1);
@@ -276,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
         SeekBar sB2 = effectSettingsLayout.findViewById(R.id.seekBar2);
         //SeekBar sB3 = effectSettingsLayout.findViewById(R.id.seekBar3);
 
+        pictureSample.quickLoad();
         //Apply effect:
         switch (currentEffect) {
             case GRAY:
@@ -299,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
                 Effects.histogramFlattening(pictureSample, Picture.Histogram.LUMINANCE);
                 break;
         }
-        pictureSample.quickLoad();
+
         iv.setImageBitmap(picture.getBitmap());
 
         //Change layout:
