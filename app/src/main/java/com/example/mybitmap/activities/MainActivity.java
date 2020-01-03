@@ -1,7 +1,6 @@
 package com.example.mybitmap.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -154,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         //Apply effect:
         switch (currentEffect) {
             case GRAY:
-                Effects.grayLevel(pictureSample);
+                Effects.grayLevel(pictureSample, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
                 break;
             case HUE:
                 Effects.colorize(pictureSample, sB1.getProgress());
@@ -182,23 +181,26 @@ public class MainActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.bGray:
                 currentEffect = Effects.EffectType.GRAY;
-                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
+                setSeekBars(true, "Rouge", 100, true, "Vert", 100, true, "Bleu", 100);
+                sB1.setProgress(30);
+                sB2.setProgress(11);
+                sB3.setProgress(59);
                 break;
             case R.id.bColor:
                 currentEffect = Effects.EffectType.KEEP_COLOR;
-                setSeekBars(true, "Teinte:", 359, true, "Tolérance:", 179, false, "", 100);
+                setSeekBars(true, "Teinte:", 359, true, "Tolérance:", 179, false, "", 1);
                 break;
             case R.id.bHue:
                 currentEffect = Effects.EffectType.HUE;
-                setSeekBars(true, "Teinte:", 359, false, "", 100, false, "", 100);
+                setSeekBars(true, "Teinte:", 359, false, "", 1, false, "", 1);
                 break;
             case R.id.bLinearContrast:
                 currentEffect = Effects.EffectType.LINEAR_EXTENSION;
-                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
+                setSeekBars(false, "", 1, false, "", 1, false, "", 1);
                 break;
             case R.id.bFlatteningContrast:
                 currentEffect = Effects.EffectType.FLATTENING;
-                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
+                setSeekBars(false, "", 1, false, "", 1, false, "", 1);
                 break;
         }
         pictureSample.quickSave();
@@ -264,8 +266,8 @@ public class MainActivity extends AppCompatActivity {
         //Apply effect:
         switch (currentEffect) {
             case GRAY:
-                Effects.grayLevel(picture);
-                Effects.grayLevel(pictureSample);
+                Effects.grayLevel(picture, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
+                Effects.grayLevel(pictureSample, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
                 break;
             case HUE:
                 Effects.colorize(picture, sB1.getProgress());
