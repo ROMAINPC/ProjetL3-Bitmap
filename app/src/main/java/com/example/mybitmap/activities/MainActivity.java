@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
     public void clickReset(View view) {
         picture.reset();
         pictureSample.reset();
+        iv.setImageBitmap(picture.getBitmap()); // Needed for refresh pixels on UI.
     }
 
 
@@ -168,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 Effects.histogramFlattening(pictureSample, Picture.Histogram.LUMINANCE);
                 break;
         }
+        iv.setImageBitmap(pictureSample.getBitmap());
     }
 
     /**
