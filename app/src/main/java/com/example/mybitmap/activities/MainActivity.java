@@ -1,6 +1,7 @@
 package com.example.mybitmap.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -17,7 +18,7 @@ import com.example.mybitmap.imageprocessing.Picture;
 public class MainActivity extends AppCompatActivity {
 
     ////////////////////// CHOOSE HERE PICTURE TO LOAD ///////////////////
-    private static final int PICTURE = R.drawable.grande;
+    private static final int PICTURE = R.drawable.low_contrast;
     private static final int MAX_SIZE = 3072;
     private static final int SAMPLE_SIZE = 384;
 
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private View effectsLayout;
     private View effectSettingsLayout;
     private Effects.EffectType currentEffect;
+    private SeekBar sB1, sB2, sB3;
+    private boolean sliding;
 
 
     @Override
@@ -68,90 +71,67 @@ public class MainActivity extends AppCompatActivity {
         tV.setText(text);
 
 
+        // Seekbar listeners:
+        sB1 = effectSettingsLayout.findViewById(R.id.seekBar1);
+        sB2 = effectSettingsLayout.findViewById(R.id.seekBar2);
+        sB3 = effectSettingsLayout.findViewById(R.id.seekBar3);
+        sliding = false;
 
 
-/*
-
-        colorBar = findViewById(R.id.colorBar);
-        colorBar.setMax(359);
-        colorBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
+        sB1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (!keepColor) {
-                    pictureSample.reset();
-                    Effects.keepColor(pictureSample, seekBar.getProgress(), toleranceBar.getProgress());
-                }
-
+                if (sliding) //security to avoid double effect apply, because setSeekBars() also call this function.
+                    applySampleEffect();
             }
 
+            @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if (!keepColor) {
-                    iv.setImageBitmap(pictureSample.getBitmap());
-                }
-
+                sliding = true;
             }
 
+            @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (!keepColor) {
-                    iv.setImageBitmap(picture.getBitmap());
-                }
-
+                sliding = false;
             }
+
         });
-
-        toleranceBar = findViewById(R.id.toleranceBar);
-        toleranceBar.setMax(179);
-        toleranceBar.setProgress(30);
-        toleranceBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
+        sB2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (!keepColor) {
-                    pictureSample.reset();
-                    Effects.keepColor(pictureSample, colorBar.getProgress(), seekBar.getProgress());
-                }
+                if (sliding)
+                    applySampleEffect();
             }
 
+            @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if (!keepColor) {
-                    iv.setImageBitmap(pictureSample.getBitmap());
-                }
+                sliding = true;
             }
 
+            @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (!keepColor) {
-                    iv.setImageBitmap(picture.getBitmap());
-                }
+                sliding = false;
             }
+
         });
-
-        SeekBar hueBar = findViewById(R.id.hueBar);
-        hueBar.setMax(359);
-        hueBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-
+        sB3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (!colorize) {
-                    pictureSample.reset();
-                    Effects.colorize(pictureSample, progress);
-                }
+                if (sliding)
+                    applySampleEffect();
             }
 
+            @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if (!colorize) {
-                    iv.setImageBitmap(pictureSample.getBitmap());
-                }
+                sliding = true;
             }
 
+            @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (!colorize) {
-                    Effects.colorize(picture, seekBar.getProgress());
-                    iv.setImageBitmap(picture.getBitmap());
-                    Effects.colorize(pictureSample, seekBar.getProgress());
-                    pictureSample.quickSave();
-                    colorize = true;
-                }
+                sliding = false;
             }
-        });*/
+
+        });
 
 
     }
@@ -164,38 +144,65 @@ public class MainActivity extends AppCompatActivity {
         pictureSample.reset();
     }
 
+
+    /**
+     * Apply current effect to the sample image.
+     */
+    private void applySampleEffect() {
+        pictureSample.quickLoad();
+        //Apply effect:
+        switch (currentEffect) {
+            case GRAY:
+                Effects.grayLevel(pictureSample);
+                break;
+            case HUE:
+                Effects.colorize(pictureSample, sB1.getProgress());
+                break;
+            case KEEP_COLOR:
+                Effects.keepColor(pictureSample, sB1.getProgress(), sB2.getProgress());
+                break;
+            case LINEAR_EXTENSION:
+                Effects.linearDynamicExtension(pictureSample, Picture.Histogram.LUMINANCE);
+                break;
+            case FLATTENING:
+                Effects.histogramFlattening(pictureSample, Picture.Histogram.LUMINANCE);
+                break;
+        }
+    }
+
     /**
      * Click handler for effects buttons.
      *
      * @param v Button which call the method
      */
     public void onClickEffect(View v) {
-
         // assign seekbars:
         switch (v.getId()) {
             case R.id.bGray:
-                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
                 currentEffect = Effects.EffectType.GRAY;
+                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
                 break;
             case R.id.bColor:
-                setSeekBars(true, "Teinte:", 359, true, "Tolérance:", 179, false, "", 100);
                 currentEffect = Effects.EffectType.KEEP_COLOR;
+                setSeekBars(true, "Teinte:", 359, true, "Tolérance:", 179, false, "", 100);
                 break;
             case R.id.bHue:
-                setSeekBars(true, "Teinte:", 359, false, "", 100, false, "", 100);
                 currentEffect = Effects.EffectType.HUE;
+                setSeekBars(true, "Teinte:", 359, false, "", 100, false, "", 100);
                 break;
             case R.id.bLinearContrast:
-                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
                 currentEffect = Effects.EffectType.LINEAR_EXTENSION;
+                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
                 break;
             case R.id.bFlatteningContrast:
-                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
                 currentEffect = Effects.EffectType.FLATTENING;
+                setSeekBars(false, "", 100, false, "", 100, false, "", 100);
                 break;
         }
         pictureSample.quickSave();
+        applySampleEffect();
         iv.setImageBitmap(pictureSample.getBitmap());
+
         //Change layout:
         underLayout.removeAllViews();
         underLayout.addView(effectSettingsLayout);
@@ -204,31 +211,28 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Enter for each of the three Seekbars, a boolean to set it visible, the text to print near the Seekbar, and the range value.
      *
-     * @param visible1
-     * @param name1
-     * @param max1
-     * @param visible2
-     * @param name2
-     * @param max2
-     * @param visible3
-     * @param name3
-     * @param max3
+     * @param visible1 Visible 1
+     * @param name1    Label 1
+     * @param max1     Range 1
+     * @param visible2 Visible 2
+     * @param name2    Label 2
+     * @param max2     Range 2
+     * @param visible3 Visible 3
+     * @param name3    Label 3
+     * @param max3     Range 3
      */
     private void setSeekBars(boolean visible1, String name1, int max1, boolean visible2, String name2, int max2, boolean visible3, String name3, int max3) {
-        SeekBar sB1 = effectSettingsLayout.findViewById(R.id.seekBar1);
         TextView tV1 = effectSettingsLayout.findViewById(R.id.textView1);
-        SeekBar sB2 = effectSettingsLayout.findViewById(R.id.seekBar2);
         TextView tV2 = effectSettingsLayout.findViewById(R.id.textView2);
-        SeekBar sB3 = effectSettingsLayout.findViewById(R.id.seekBar3);
         TextView tV3 = effectSettingsLayout.findViewById(R.id.textView3);
         sB1.setVisibility(visible1 ? View.VISIBLE : View.INVISIBLE);
         sB1.setMax(max1);
         tV1.setText(name1);
         sB2.setVisibility(visible2 ? View.VISIBLE : View.INVISIBLE);
-        sB1.setMax(max2);
+        sB2.setMax(max2);
         tV2.setText(name2);
         sB3.setVisibility(visible3 ? View.VISIBLE : View.INVISIBLE);
-        sB1.setMax(max3);
+        sB3.setMax(max3);
         tV3.setText(name3);
     }
 
@@ -236,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Click handler for back button in effects settings.
      *
-     * @param v
+     * @param v Button clicked
      */
     public void clickBack(View v) {
         //Change layout:
@@ -250,12 +254,9 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Click handler for apply button in effects settings.
      *
-     * @param v
+     * @param v Button clicked
      */
     public void clickApply(View v) {
-        SeekBar sB1 = effectSettingsLayout.findViewById(R.id.seekBar1);
-        SeekBar sB2 = effectSettingsLayout.findViewById(R.id.seekBar2);
-        //SeekBar sB3 = effectSettingsLayout.findViewById(R.id.seekBar3);
 
         pictureSample.quickLoad();
         //Apply effect:
