@@ -163,5 +163,21 @@ public class Utils {
         return new int[]{min, max};
     }
 
+    /**
+     * Just prints values in the histogram separated by commas, use it to show your histogram in a tierce software.
+     * Also prints total of pixels.
+     *
+     * @param histogram Histogram to print.
+     */
+    public static void printHistogram(int[] histogram) {
+        int total = 0;
+        StringBuilder str = new StringBuilder();
+        for (int val : histogram) {
+            total += val;
+            str.append(val+",");
+        }
+        Log.v("Histogram", String.valueOf(str));
+        Log.v("Histogram", "Total pixels: " + total);
+    }
 
 }

@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
-import java.util.HashMap;
-
 import androidx.renderscript.RenderScript;
 
 /**
@@ -15,10 +13,16 @@ import androidx.renderscript.RenderScript;
 public class Picture {
 
     /**
-     * Enumeration of several types of Histograms
+     * Enumeration of several types of Histograms.
      */
     public enum Histogram {
+        /**
+         * Luminance is the V in the color system HSV.
+         */
         LUMINANCE,
+        /**
+         * Gray level is an average of the red green and blue value of the pixel : 0.3 * R + + 0.11 * G + 0.59 * B
+         */
         GRAY_LEVEL_NATURAL
     }
 
@@ -33,7 +37,6 @@ public class Picture {
     private int[] original;
     private int[] save;
 
-    private HashMap<Histogram, int[]> histograms = new HashMap<>();
 
     private RenderScript renderScript;
 
@@ -58,8 +61,8 @@ public class Picture {
         this.ctx = pic.ctx;
 
         //generate empty bitmap:
-        sourceHeight = pic.getsourceHeight();
-        sourceWidth = pic.getsourceWidth();
+        sourceHeight = pic.getSourceHeight();
+        sourceWidth = pic.getSourceWidth();
 
         int sampleRatio = Utils.calculateInSampleSize(sourceWidth, sourceHeight, newReqWidth, newReqHeight);
 
@@ -177,14 +180,14 @@ public class Picture {
     /**
      * @return Original file width in pixels.
      */
-    public int getsourceWidth() {
+    public int getSourceWidth() {
         return sourceWidth;
     }
 
     /**
      * @return Original file height in pixels.
      */
-    public int getsourceHeight() {
+    public int getSourceHeight() {
         return sourceHeight;
     }
 
@@ -202,31 +205,14 @@ public class Picture {
         return src;
     }
 
-    /**
-     * To know if a precise type of histogram was genereate for this picture.
-     *
-     * @param type Histogram type
-     * @return true if generated.
-     */
-    public boolean isHistogramGenerated(Histogram type) {
-        return histograms.containsKey(type);
-    }
-
-    /**
-     * @param type The type of the selected histogram.
-     * @return Integer array (256 values) corresponding to the histogram.
-     */
-    public int[] getHistogram(Histogram type) {
-        return histograms.get(type);
-    }
-
 
     /**
      * Compute an histogram.
      *
      * @param type The histogram type.
+     * @return Histogram in an array with 256 values.
      */
-    public void generateHistogram(Histogram type) {
+    public int[] getHistogram(Histogram type) {
         int[] histogram = new int[256];
         int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
         bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -246,7 +232,7 @@ public class Picture {
             }
         }
 
-        histograms.put(type, histogram);
+        return histogram;
     }
 
     /**

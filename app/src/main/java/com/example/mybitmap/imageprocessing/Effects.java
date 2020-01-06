@@ -2,6 +2,7 @@ package com.example.mybitmap.imageprocessing;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 
 
 /**
@@ -147,31 +148,33 @@ public class Effects {
         int[] extr = Utils.getHistogramMinMaxValue(histogram);
         int min = extr[0];
         int max = extr[1];
-        for (int i = 0; i < histogram.length; i++) {
-            LUT[i] = 255 * (i - min) / (max - min);
-        }
-
-        //apply LUT:
-        int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
-        bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
-        for (int i = 0; i < pixels.length; i++) {
-            int px = pixels[i];
-            switch (type) {
-                case LUMINANCE:
-                    float[] hsv = new float[3];
-                    Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
-                    hsv[2] = (float) LUT[(int) (hsv[2] * 255f)] / 255f;
-                    pixels[i] = Utils.HSVToColor(hsv, Color.alpha(px));
-                    break;
-                case GRAY_LEVEL_NATURAL:
-                    int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
-                    gray = LUT[gray];
-                    pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray);
-                    break;
+        if (max != min) { // if bitmap is uniform there will be a division by zero, to avoid it and because there should be no visual effect, the algorithm is skipped.
+            for (int i = 0; i < histogram.length; i++) {
+                LUT[i] = 255 * (i - min) / (max - min);
             }
 
+            //apply LUT:
+            int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
+            bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+            for (int i = 0; i < pixels.length; i++) {
+                int px = pixels[i];
+                switch (type) {
+                    case LUMINANCE:
+                        float[] hsv = new float[3];
+                        Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
+                        hsv[2] = (float) LUT[(int) (hsv[2] * 255f)] / 255f;
+                        pixels[i] = Utils.HSVToColor(hsv, Color.alpha(px));
+                        break;
+                    case GRAY_LEVEL_NATURAL: // Decolorize the bitmap.
+                        int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
+                        gray = LUT[gray];
+                        pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray);
+                        break;
+                }
+
+            }
+            bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
         }
-        bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
     }
 
     /**
@@ -181,10 +184,6 @@ public class Effects {
      * @param type Histogram type to egalize.
      */
     public static void linearDynamicExtension(Picture p, Picture.Histogram type) {
-
-        if (!p.isHistogramGenerated(type)) {
-            p.generateHistogram(type);
-        }
         linearDynamicExtension(p.getBitmap(), type, p.getHistogram(type));
     }
 
@@ -218,7 +217,7 @@ public class Effects {
                     hsv[2] = (float) (cumu[(int) (hsv[2] * 255f)] * 255 / N) / 255f;
                     pixels[i] = Utils.HSVToColor(hsv, Color.alpha(px));
                     break;
-                case GRAY_LEVEL_NATURAL:
+                case GRAY_LEVEL_NATURAL: // Decolorize the bitmap.
                     int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
                     gray = cumu[gray] * 255 / N;
                     pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray);
@@ -236,10 +235,6 @@ public class Effects {
      * @param type Histogram type to egalize.
      */
     public static void histogramFlattening(Picture p, Picture.Histogram type) {
-
-        if (!p.isHistogramGenerated(type)) {
-            p.generateHistogram(type);
-        }
         histogramFlattening(p.getBitmap(), type, p.getHistogram(type));
     }
 }
