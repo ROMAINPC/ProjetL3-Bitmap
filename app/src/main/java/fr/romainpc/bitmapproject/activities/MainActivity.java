@@ -1,4 +1,4 @@
-package com.example.mybitmap.activities;
+package fr.romainpc.bitmapproject.activities;
 
 import android.os.Bundle;
 import android.view.View;
@@ -10,9 +10,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.renderscript.RenderScript;
 
-import com.example.mybitmap.R;
-import com.example.mybitmap.imageprocessing.Effects;
-import com.example.mybitmap.imageprocessing.Picture;
+import fr.romainpc.bitmapproject.R;
+import fr.romainpc.bitmapproject.imageprocessing.Effects;
+import fr.romainpc.bitmapproject.imageprocessing.Picture;
 
 public class MainActivity extends AppCompatActivity {
 

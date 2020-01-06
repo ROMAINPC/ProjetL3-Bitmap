@@ -1,7 +1,7 @@
-package com.example.mybitmap.imageprocessing;
+package fr.romainpc.bitmapproject.imageprocessing;
 
 
-import com.example.mybitmap.imageprocessing.rsclass.ScriptC_gray;
+import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_gray;
 
 import androidx.renderscript.Allocation;
 import androidx.renderscript.ScriptC;

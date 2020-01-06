@@ -1,4 +1,4 @@
-package com.example.mybitmap;
+package fr.romainpc.bitmapproject;
 
 import org.junit.Test;
 

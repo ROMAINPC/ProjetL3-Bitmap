@@ -1,4 +1,4 @@
-package com.example.mybitmap.imageprocessing;
+package fr.romainpc.bitmapproject.imageprocessing;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -1,8 +1,6 @@
-package com.example.mybitmap.imageprocessing;
+package fr.romainpc.bitmapproject.imageprocessing;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 /**

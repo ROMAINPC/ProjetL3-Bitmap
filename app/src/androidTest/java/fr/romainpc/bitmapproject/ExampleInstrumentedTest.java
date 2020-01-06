@@ -1,4 +1,4 @@
-package com.example.mybitmap;
+package fr.romainpc.bitmapproject;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.example.mybitmap", appContext.getPackageName());
+        assertEquals("fr.romainpc.bitmapproject", appContext.getPackageName());
     }
 }
