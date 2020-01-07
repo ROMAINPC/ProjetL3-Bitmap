@@ -17,6 +17,9 @@ import fr.romainpc.bitmapproject.imageprocessing.Effects;
 import fr.romainpc.bitmapproject.imageprocessing.Picture;
 import fr.romainpc.bitmapproject.imageprocessing.RSEffects;
 
+/**
+ * Starting point of the application, manage all components and listeners.
+ */
 public class MainActivity extends AppCompatActivity {
 
     ////////////////////// CHOOSE HERE PICTURE TO LOAD ///////////////////

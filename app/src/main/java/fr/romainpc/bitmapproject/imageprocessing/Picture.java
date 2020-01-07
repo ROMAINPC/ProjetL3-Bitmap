@@ -43,7 +43,7 @@ public class Picture {
     /**
      * Just copy a Picture instance.
      *
-     * @param pic
+     * @param pic Picture to copy.
      */
     public Picture(Picture pic) {
         this(pic, 0, 0);

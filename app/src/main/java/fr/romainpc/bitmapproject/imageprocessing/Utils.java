@@ -16,8 +16,8 @@ public class Utils {
      * hsv[1] -> S:[0;1]
      * hsv[2] -> V:[0;1]
      *
-     * @param hsv
-     * @param alpha
+     * @param hsv   Array with hsv values
+     * @param alpha Alpha value
      * @return the ARGB color.
      * @see android.graphics.Color
      */
@@ -123,15 +123,10 @@ public class Utils {
                                             int reqWidth, int reqHeight) {
         if (reqWidth <= 0 || reqHeight <= 0)
             return 1;
-        // Raw height and width of image
-        final int height = originalHeight;
-        final int width = originalWidth;
         int inSampleSize = 1;
-
         // Found smallest SampleSize value which keep both with and height inferior of required size.
-
-        while ((height / inSampleSize) > reqHeight
-                || (width / inSampleSize) > reqWidth) {
+        while ((originalHeight / inSampleSize) > reqHeight
+                || (originalWidth / inSampleSize) > reqWidth) {
             inSampleSize *= 2;
         }
 
@@ -141,7 +136,7 @@ public class Utils {
     /**
      * Compute minimum and maximum value in an histogram array.
      *
-     * @param histogram
+     * @param histogram Histogram to compute.
      * @return An array with minimum value at index 0 and maximum at index 1.
      */
     public static int[] getHistogramMinMaxValue(int[] histogram) {
@@ -172,7 +167,8 @@ public class Utils {
         StringBuilder str = new StringBuilder();
         for (int val : histogram) {
             total += val;
-            str.append(val+",");
+            str.append(val);
+            str.append(",");
         }
         Log.v("Histogram", String.valueOf(str));
         Log.v("Histogram", "Total pixels: " + total);
