@@ -130,8 +130,8 @@ public class Utils {
 
         // Found smallest SampleSize value which keep both with and height inferior of required size.
 
-        while ((height / inSampleSize) >= reqHeight
-                || (width / inSampleSize) >= reqWidth) {
+        while ((height / inSampleSize) > reqHeight
+                || (width / inSampleSize) > reqWidth) {
             inSampleSize *= 2;
         }
 

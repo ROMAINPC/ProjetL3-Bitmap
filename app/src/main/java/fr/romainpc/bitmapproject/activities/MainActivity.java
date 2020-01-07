@@ -1,10 +1,12 @@
 package fr.romainpc.bitmapproject.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +15,7 @@ import androidx.renderscript.RenderScript;
 import fr.romainpc.bitmapproject.R;
 import fr.romainpc.bitmapproject.imageprocessing.Effects;
 import fr.romainpc.bitmapproject.imageprocessing.Picture;
+import fr.romainpc.bitmapproject.imageprocessing.RSEffects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private View effectSettingsLayout;
     private Effects.EffectType currentEffect;
     private SeekBar sB1, sB2, sB3;
+    private Switch switchRS;
     private boolean sliding;
 
 
@@ -49,11 +53,6 @@ public class MainActivity extends AppCompatActivity {
         //load bad quality picture for previews:
         pictureSample = new Picture(picture, SAMPLE_SIZE, SAMPLE_SIZE);
 
-        //generateRenderScript
-        rs = RenderScript.create(this);
-        picture.setRenderScript(rs);
-        pictureSample.setRenderScript(rs);
-
 
         //UI and layouts:
         //default bottom layout:
@@ -69,6 +68,12 @@ public class MainActivity extends AppCompatActivity {
         String text = "Dimensions : " + picture.getWidth() + " x " + picture.getHeight() + " px";
         tV.setText(text);
 
+        //generateRenderScript
+        rs = RenderScript.create(this);
+        picture.setRenderScript(rs);
+        pictureSample.setRenderScript(rs);
+        switchRS = underLayout.findViewById(R.id.switch1);
+
 
         // Seekbar listeners:
         sB1 = effectSettingsLayout.findViewById(R.id.seekBar1);
@@ -80,8 +85,11 @@ public class MainActivity extends AppCompatActivity {
         sB1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (sliding) //security to avoid double effect apply, because setSeekBars() also call this function.
-                    applySampleEffect();
+                if (sliding) { //security to avoid double effect apply, because setSeekBars() also call this function.
+                    pictureSample.quickLoad();
+                    applyEffect(pictureSample, currentEffect, switchRS.isChecked());
+                    iv.setImageBitmap(pictureSample.getBitmap());
+                }
             }
 
             @Override
@@ -98,8 +106,11 @@ public class MainActivity extends AppCompatActivity {
         sB2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (sliding)
-                    applySampleEffect();
+                if (sliding) {
+                    pictureSample.quickLoad();
+                    applyEffect(pictureSample, currentEffect, switchRS.isChecked());
+                    iv.setImageBitmap(pictureSample.getBitmap());
+                }
             }
 
             @Override
@@ -116,8 +127,11 @@ public class MainActivity extends AppCompatActivity {
         sB3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (sliding)
-                    applySampleEffect();
+                if (sliding) {
+                    pictureSample.quickLoad();
+                    applyEffect(pictureSample, currentEffect, switchRS.isChecked());
+                    iv.setImageBitmap(pictureSample.getBitmap());
+                }
             }
 
             @Override
@@ -142,33 +156,6 @@ public class MainActivity extends AppCompatActivity {
         picture.reset();
         pictureSample.reset();
         iv.setImageBitmap(picture.getBitmap()); // Needed for refresh pixels on UI.
-    }
-
-
-    /**
-     * Apply current effect to the sample image.
-     */
-    private void applySampleEffect() {
-        pictureSample.quickLoad();
-        //Apply effect:
-        switch (currentEffect) {
-            case GRAY:
-                Effects.grayLevel(pictureSample, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
-                break;
-            case HUE:
-                Effects.colorize(pictureSample, sB1.getProgress());
-                break;
-            case KEEP_COLOR:
-                Effects.keepColor(pictureSample, sB1.getProgress(), sB2.getProgress());
-                break;
-            case LINEAR_EXTENSION:
-                Effects.linearDynamicExtension(pictureSample, Picture.Histogram.LUMINANCE);
-                break;
-            case FLATTENING:
-                Effects.histogramFlattening(pictureSample, Picture.Histogram.LUMINANCE);
-                break;
-        }
-        iv.setImageBitmap(pictureSample.getBitmap());
     }
 
     /**
@@ -204,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         pictureSample.quickSave();
-        applySampleEffect();
+        pictureSample.quickLoad();
+        applyEffect(pictureSample, currentEffect, switchRS.isChecked());
         iv.setImageBitmap(pictureSample.getBitmap());
 
         //Change layout:
@@ -264,35 +252,47 @@ public class MainActivity extends AppCompatActivity {
 
         pictureSample.quickLoad();
         //Apply effect:
-        switch (currentEffect) {
-            case GRAY:
-                Effects.grayLevel(picture, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
-                Effects.grayLevel(pictureSample, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
-                break;
-            case HUE:
-                Effects.colorize(picture, sB1.getProgress());
-                Effects.colorize(pictureSample, sB1.getProgress());
-                break;
-            case KEEP_COLOR:
-                Effects.keepColor(picture, sB1.getProgress(), sB2.getProgress());
-                Effects.keepColor(pictureSample, sB1.getProgress(), sB2.getProgress());
-                break;
-            case LINEAR_EXTENSION:
-                Effects.linearDynamicExtension(picture, Picture.Histogram.LUMINANCE);
-                Effects.linearDynamicExtension(pictureSample, Picture.Histogram.LUMINANCE);
-                break;
-            case FLATTENING:
-                Effects.histogramFlattening(picture, Picture.Histogram.LUMINANCE);
-                Effects.histogramFlattening(pictureSample, Picture.Histogram.LUMINANCE);
-                break;
-        }
-
+        applyEffect(picture, currentEffect, switchRS.isChecked());
+        applyEffect(pictureSample, currentEffect, switchRS.isChecked());
         iv.setImageBitmap(picture.getBitmap());
 
         //Change layout:
         underLayout.removeAllViews();
         underLayout.addView(effectsLayout);
         currentEffect = null;
+    }
+
+    /**
+     * Apply an effect on a Picture.
+     *
+     * @param picture       The picture to modify
+     * @param currentEffect Effect type to apply
+     * @param renderscript  Use or not RenderScript accélération.
+     */
+    private void applyEffect(Picture picture, Effects.EffectType currentEffect, boolean renderscript) {
+
+        //Apply effect:
+        switch (currentEffect) {
+            case GRAY:
+                if (renderscript)
+                    RSEffects.effect(picture, RSEffects.RSEffect.GRAY_LEVEL);
+                else
+                    Effects.grayLevel(picture, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
+                break;
+            case HUE:
+                Effects.colorize(picture, sB1.getProgress());
+                break;
+            case KEEP_COLOR:
+                Effects.keepColor(picture, sB1.getProgress(), sB2.getProgress());
+                break;
+            case LINEAR_EXTENSION:
+                Effects.linearDynamicExtension(picture, Picture.Histogram.LUMINANCE);
+                break;
+            case FLATTENING:
+                Effects.histogramFlattening(picture, Picture.Histogram.LUMINANCE);
+                break;
+        }
+
     }
 
     @Override
