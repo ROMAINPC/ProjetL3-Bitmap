@@ -28,12 +28,15 @@ public class RSEffects {
      * @param green   Green proportion (between 0.0 and 1.0)
      * @param blue    Blue proportion (between 0.0 and 1.0)
      */
-    public static void grayLevel(Picture picture, double red, double green, double blue) {
+    public static void grayLevel(Picture picture, float red, float green, float blue) {
         if (picture.getRenderScript() == null)
             return;
         allocate(picture);
 
         script = new ScriptC_gray(picture.getRenderScript());
+        ((ScriptC_gray) script).set_redWeight(red);
+        ((ScriptC_gray) script).set_greenWeight(green);
+        ((ScriptC_gray) script).set_blueWeight(blue);
         ((ScriptC_gray) script).forEach_gray(input, output);
         output.copyTo(picture.getBitmap());
 
