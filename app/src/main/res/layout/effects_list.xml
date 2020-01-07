@@ -7,7 +7,7 @@
 
     <Button
         android:id="@+id/bReset"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:minHeight="30dip"
         android:onClick="clickReset"
@@ -16,10 +16,35 @@
         app:autoSizeMinTextSize="6sp"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toStartOf="@id/switch1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dimensionsLabel" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="30dip"
+        android:text="     "
+        app:layout_constraintBottom_toBottomOf="@+id/bReset"
+        app:layout_constraintEnd_toEndOf="@id/switchText"
+        app:layout_constraintStart_toEndOf="@+id/bReset"
+        app:layout_constraintTop_toTopOf="@+id/bReset" />
+
+
+    <TextView
+        android:id="@+id/switchText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="30dip"
+        android:text="Accélération"
+        app:autoSizeMaxTextSize="20sp"
+        app:autoSizeMinTextSize="6sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/bReset"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/switch1"
+        app:layout_constraintTop_toTopOf="@+id/bReset" />
 
     <TextView
         android:id="@+id/dimensionsLabel"
@@ -118,5 +143,6 @@
 
         </LinearLayout>
     </HorizontalScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
