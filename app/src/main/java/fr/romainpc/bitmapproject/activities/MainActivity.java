@@ -278,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
         switch (currentEffect) {
             case GRAY:
                 if (renderscript)
-                    RSEffects.effect(picture, RSEffects.RSEffect.GRAY_LEVEL);
+                    RSEffects.grayLevel(picture, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
                 else
                     Effects.grayLevel(picture, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
                 break;

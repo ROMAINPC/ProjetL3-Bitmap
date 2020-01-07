@@ -10,40 +10,55 @@ import androidx.renderscript.ScriptC;
  * Class with methods to apply effects on Pictures using Renderscript library.
  *
  * @see android.graphics.Bitmap
+ * @see Picture
  */
 public class RSEffects {
 
+    private static Allocation input;
+    private static Allocation output;
+    private static ScriptC script;
 
-    public enum RSEffect {
-        GRAY_LEVEL
+
+    /**
+     * Apply effect on Picture passed in parameter: put the picture in gray level.
+     * Adjust red green and blue value to adjust which of them will impact the more the gray level.
+     *
+     * @param picture Picture to modify
+     * @param red     Red proportion (between 0.0 and 1.0)
+     * @param green   Green proportion (between 0.0 and 1.0)
+     * @param blue    Blue proportion (between 0.0 and 1.0)
+     */
+    public static void grayLevel(Picture picture, double red, double green, double blue) {
+        if (picture.getRenderScript() == null)
+            return;
+        allocate(picture);
+
+        script = new ScriptC_gray(picture.getRenderScript());
+        ((ScriptC_gray) script).forEach_gray(input, output);
+        output.copyTo(picture.getBitmap());
+
+        destroy();
     }
 
     /**
-     * Apply the selected effect on a Picture by using RenderScript.
-     * An instance of RenderScript must be passed to the picture before, else this function do nothing.
+     * Instantiate and load Allocation for RenderScript in static variables.
      *
-     * @param picture
-     * @param effectType
+     * @param picture Picture to allocate
      */
-    public static void effect(Picture picture, RSEffect effectType) {
-        if (picture.getRenderScript() == null)
-            return;
-        Allocation input = Allocation.createFromBitmap(picture.getRenderScript(), picture.getBitmap());
-        Allocation output = Allocation.createTyped(picture.getRenderScript(), input.getType());
-        ScriptC script = null;
-        switch (effectType) {
-            case GRAY_LEVEL:
-                script = new ScriptC_gray(picture.getRenderScript());
-                ((ScriptC_gray) script).forEach_gray(input, output);
-                break;
-        }
-        output.copyTo(picture.getBitmap());
+    private static void allocate(Picture picture) {
+        input = Allocation.createFromBitmap(picture.getRenderScript(), picture.getBitmap());
+        output = Allocation.createTyped(picture.getRenderScript(), input.getType());
+        script = null;
+    }
+
+    /**
+     * Destroy RenderScript allocations in static variables.
+     */
+    private static void destroy() {
         input.destroy();
         output.destroy();
         script.destroy();
-
     }
-
 
 }
 
