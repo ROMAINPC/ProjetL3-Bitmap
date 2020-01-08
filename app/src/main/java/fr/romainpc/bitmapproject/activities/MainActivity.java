@@ -198,7 +198,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         pictureSample.quickSave();
-        pictureSample.quickLoad();
         applyEffect(pictureSample, currentEffect, switchRS.isChecked());
         iv.setImageBitmap(pictureSample.getBitmap());
 
