@@ -333,10 +333,10 @@ public class Effects {
             intensity--;
 
 
-        float[][] kernel = new float[intensity][intensity];
+        int[][] kernel = new int[intensity][intensity];
         for (int i = 0; i < intensity; i++)
             for (int j = 0; j < intensity; j++)
-                kernel[i][j] = 1f / (intensity * intensity);
+                kernel[i][j] = 1;
 
         convolute(bmp, kernel);
 
@@ -348,7 +348,6 @@ public class Effects {
      * @param p Picture to modify
      */
     public static void simpleBlurr(Picture p, int intensity) {
-        System.out.println(intensity);
         simpleBlurr(p.getBitmap(), intensity);
     }
 
@@ -357,9 +356,9 @@ public class Effects {
      * Apply convolution effect on the Bitmap by ponderate values around each pixels by following weights in the kernel array.
      *
      * @param bmp    Bitmap to convolute
-     * @param kernel Constrainsts: square odd array && sum of each values == 1.0
+     * @param kernel Constrainsts: square odd array
      */
-    private static void convolute(Bitmap bmp, float[][] kernel) {
+    private static void convolute(Bitmap bmp, int[][] kernel) {
         //float[x][y], y-down, x-right
         //security:
         int width = kernel.length;
@@ -373,17 +372,13 @@ public class Effects {
             Log.e("Convolution", "Invalid kernel size");
             return;
         }
-        /*
-        float sum = 0f;
+        int sumI = 0;
         for (int i = 0; i < width; i++)
             for (int j = 0; j < width; j++)
-                sum += kernel[i][j];
-
-
-        if (sum != 1f) {
-            Log.e("Convolution", "Invalid kernel values with sum of " + sum);
-            return;
-        }*/
+                sumI += kernel[i][j];
+        float sum = sumI;
+        if (sumI == 0)
+            sum = 1;
 
         //apply kernel on bitmap:
         int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
@@ -401,9 +396,9 @@ public class Effects {
                 for (int i = -hW; i <= hW; i++) {
                     for (int j = -hW; j <= hW; j++) {
                         int coord = (Y + j) * bmp.getWidth() + (X + i);
-                        r += Color.red(pixels[coord]) * kernel[i + hW][j + hW];
-                        g += Color.green(pixels[coord]) * kernel[i + hW][j + hW];
-                        b += Color.blue(pixels[coord]) * kernel[i + hW][j + hW];
+                        r += Color.red(pixels[coord]) * (kernel[i + hW][j + hW] / sum);
+                        g += Color.green(pixels[coord]) * (kernel[i + hW][j + hW] / sum);
+                        b += Color.blue(pixels[coord]) * (kernel[i + hW][j + hW] / sum);
 
                     }
                 }
