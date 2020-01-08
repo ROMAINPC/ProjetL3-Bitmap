@@ -24,7 +24,8 @@ public class Effects {
         HUE_SHIFT,
         KEEP_COLOR,
         LINEAR_EXTENSION,
-        FLATTENING
+        FLATTENING,
+        SIMPLE_BLURRING
     }
 
     /**
@@ -319,4 +320,103 @@ public class Effects {
     public static void histogramFlattening(Picture p, Picture.Histogram type) {
         histogramFlattening(p.getBitmap(), type, p.getHistograms(type));
     }
+
+    /**
+     * Apply simple blurring ont the image.
+     *
+     * @param bmp       Bitmap
+     * @param intensity Size of the convolution kernel, minimum 1, maximum : depends on the power of your hardware.
+     */
+    public static void simpleBlurr(Bitmap bmp, int intensity) {
+        intensity = intensity > 0 ? intensity : 1;
+        if (intensity % 2 == 0)
+            intensity--;
+
+
+        float[][] kernel = new float[intensity][intensity];
+        for (int i = 0; i < intensity; i++)
+            for (int j = 0; j < intensity; j++)
+                kernel[i][j] = 1f / (intensity * intensity);
+
+        convolute(bmp, kernel);
+
+    }
+
+    /**
+     * See {@link #simpleBlurr(Bitmap, int)} method
+     *
+     * @param p Picture to modify
+     */
+    public static void simpleBlurr(Picture p, int intensity) {
+        System.out.println(intensity);
+        simpleBlurr(p.getBitmap(), intensity);
+    }
+
+
+    /**
+     * Apply convolution effect on the Bitmap by ponderate values around each pixels by following weights in the kernel array.
+     *
+     * @param bmp    Bitmap to convolute
+     * @param kernel Constrainsts: square odd array && sum of each values == 1.0
+     */
+    private static void convolute(Bitmap bmp, float[][] kernel) {
+        //float[x][y], y-down, x-right
+        //security:
+        int width = kernel.length;
+        boolean ok = width > 0 ? true : false;
+        for (int i = 0; i < width; i++)
+            if (kernel[i].length != width) {
+                ok = false;
+                i = width;
+            }
+        if (!ok || width % 2 == 0) {
+            Log.e("Convolution", "Invalid kernel size");
+            return;
+        }
+        /*
+        float sum = 0f;
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < width; j++)
+                sum += kernel[i][j];
+
+
+        if (sum != 1f) {
+            Log.e("Convolution", "Invalid kernel values with sum of " + sum);
+            return;
+        }*/
+
+        //apply kernel on bitmap:
+        int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
+        bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+        int N = pixels.length;
+        int hW = width / 2; //half-width kernel
+
+        for (int p = 0; p < N; p++) {
+
+            //kernel average:
+            int r = 0, g = 0, b = 0;
+            int X = p % bmp.getWidth();
+            int Y = p / bmp.getWidth();
+            if (X >= hW && X < bmp.getWidth() - hW && Y >= hW && Y < bmp.getHeight() - hW) { //does't do borders of picture.
+                for (int i = -hW; i <= hW; i++) {
+                    for (int j = -hW; j <= hW; j++) {
+                        int coord = (Y + j) * bmp.getWidth() + (X + i);
+                        r += Color.red(pixels[coord]) * kernel[i + hW][j + hW];
+                        g += Color.green(pixels[coord]) * kernel[i + hW][j + hW];
+                        b += Color.blue(pixels[coord]) * kernel[i + hW][j + hW];
+
+                    }
+                }
+            }
+
+            pixels[p] = Color.argb(Color.alpha(pixels[p]), r, g, b);
+
+        }
+
+        bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+
+
+    }
+
+
 }

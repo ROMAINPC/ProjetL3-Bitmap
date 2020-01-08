@@ -149,6 +149,14 @@
                 android:onClick="onClickEffect"
                 android:text="Contraste 2" />
 
+            <Button
+                android:id="@+id/bsimpleBlurr"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="onClickEffect"
+                android:text="Flou" />
+
         </LinearLayout>
     </HorizontalScrollView>
 

@@ -196,6 +196,10 @@ public class MainActivity extends AppCompatActivity {
                 currentEffect = Effects.EffectType.FLATTENING;
                 setSeekBars(false, "", 1, false, "", 1, false, "", 1);
                 break;
+            case R.id.bsimpleBlurr:
+                currentEffect = Effects.EffectType.SIMPLE_BLURRING;
+                setSeekBars(true, "Intensité", 2, false, "", 1, false, "", 1);
+                break;
         }
         pictureSample.quickSave();
         applyEffect(pictureSample, currentEffect, switchRS.isChecked());
@@ -307,6 +311,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case FLATTENING:
                 Effects.histogramFlattening(picture, Picture.Histogram.LUMINANCE);
+                break;
+            case SIMPLE_BLURRING:
+                Effects.simpleBlurr(picture, (sB1.getProgress() * 2) + 1);
                 break;
         }
 
