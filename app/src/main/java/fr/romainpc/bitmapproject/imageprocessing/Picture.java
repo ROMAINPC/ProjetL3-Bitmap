@@ -216,9 +216,8 @@ public class Picture {
         int[] histogram = new int[256];
         int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
         bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-        for (int i = 0; i < pixels.length; i++) {
+        for (int px : pixels) {
             //compute histograms, depending the historgram type:
-            int px = pixels[i];
             switch (type) {
                 case LUMINANCE:
                     float[] hsv = new float[3];

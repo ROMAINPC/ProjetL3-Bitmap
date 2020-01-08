@@ -16,12 +16,12 @@ public class Utils {
      * hsv[1] -> S:[0;1]
      * hsv[2] -> V:[0;1]
      *
-     * @param hsv   Array with hsv values
      * @param alpha Alpha value
+     * @param hsv   Array with hsv values
      * @return the ARGB color.
      * @see android.graphics.Color
      */
-    public static int HSVToColor(float[] hsv, int alpha) {
+    public static int HSVToColor(int alpha, float[] hsv) {
         //use conversion describe at https://www.rapidtables.com/convert/color/hsv-to-rgb.html
         int t = (int) ((hsv[0] / 60f) % 6);
         float C = hsv[1] * hsv[2];

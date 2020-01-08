@@ -16,6 +16,7 @@ import fr.romainpc.bitmapproject.R;
 import fr.romainpc.bitmapproject.imageprocessing.Effects;
 import fr.romainpc.bitmapproject.imageprocessing.Picture;
 import fr.romainpc.bitmapproject.imageprocessing.RSEffects;
+import fr.romainpc.bitmapproject.imageprocessing.Utils;
 
 /**
  * Starting point of the application, manage all components and listeners.
@@ -184,6 +185,10 @@ public class MainActivity extends AppCompatActivity {
                 currentEffect = Effects.EffectType.HUE;
                 setSeekBars(true, "Teinte:", 359, false, "", 1, false, "", 1);
                 break;
+            case R.id.bTranslateHue:
+                currentEffect = Effects.EffectType.HUE_SHIFT;
+                setSeekBars(true, "Teinte:", 359, false, "", 1, false, "", 1);
+                break;
             case R.id.bLinearContrast:
                 currentEffect = Effects.EffectType.LINEAR_EXTENSION;
                 setSeekBars(false, "", 1, false, "", 1, false, "", 1);
@@ -284,6 +289,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case HUE:
                 Effects.colorize(picture, sB1.getProgress());
+                break;
+            case HUE_SHIFT:
+                Effects.colorShift(picture, sB1.getProgress());
                 break;
             case KEEP_COLOR:
                 Effects.keepColor(picture, sB1.getProgress(), sB2.getProgress());

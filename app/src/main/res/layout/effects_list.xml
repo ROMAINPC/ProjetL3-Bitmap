@@ -123,7 +123,15 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="onClickEffect"
-                android:text="Teinte" />
+                android:text="Teinte 1" />
+
+            <Button
+                android:id="@+id/bTranslateHue"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="onClickEffect"
+                android:text="Teinte 2" />
 
             <Button
                 android:id="@+id/bLinearContrast"

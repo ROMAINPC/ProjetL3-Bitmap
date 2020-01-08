@@ -2,6 +2,7 @@ package fr.romainpc.bitmapproject.imageprocessing;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 
 
 /**
@@ -17,6 +18,7 @@ public class Effects {
     public enum EffectType {
         GRAY,
         HUE,
+        HUE_SHIFT,
         KEEP_COLOR,
         LINEAR_EXTENSION,
         FLATTENING
@@ -62,7 +64,7 @@ public class Effects {
         for (int i = 0; i < pixels.length; i++) {
             int px = pixels[i];
             int gray = (int) (red * (double) Color.red(px) + blue * (double) Color.blue(px) + green * (double) Color.green(px));
-            pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray);
+            pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray); //Also limits values if out of [0:255]
         }
         bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
     }
@@ -81,17 +83,7 @@ public class Effects {
      * @param hueAngle Hue value, represented by an angle on the hue wheel [0;360]
      */
     public static void colorize(Bitmap bmp, int hueAngle) {
-        int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
-        bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
-        float hue = (float) hueAngle;
-        for (int i = 0; i < pixels.length; i++) {
-            int px = pixels[i];
-            float[] hsv = new float[3];
-            Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
-            hsv[0] = hue;
-            pixels[i] = Utils.HSVToColor(hsv, Color.alpha(px));
-        }
-        bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+        hueOperation(bmp, hueAngle, false);
     }
 
     /**
@@ -100,6 +92,45 @@ public class Effects {
     public static void colorize(Picture p, int hueAngle) {
         colorize(p.getBitmap(), hueAngle);
     }
+
+    /**
+     * Apply effect on the bitmap picture passed in parameter: Translate the hue of pixels.
+     *
+     * @param bmp      Bitmap
+     * @param hueShift Hue value, represented by an angle on the hue wheel [0;360]
+     */
+    public static void colorShift(Bitmap bmp, int hueShift) {
+        hueOperation(bmp, hueShift, true);
+    }
+
+    /**
+     * See {@link #colorShift(Bitmap, int)} method
+     */
+    public static void colorShift(Picture p, int hueAngle) {
+        colorShift(p.getBitmap(), hueAngle);
+    }
+
+    /**
+     * See {@link #colorShift(Bitmap, int)} and See {@link #colorize(Bitmap, int)}
+     *
+     * @param bmp      Bitmap to modify
+     * @param hueAngle hue shift or choice
+     * @param shift    Shift hue or just replace it
+     */
+    private static void hueOperation(Bitmap bmp, int hueAngle, boolean shift) {
+        int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
+        bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+        float hue = (float) hueAngle;
+        for (int i = 0; i < pixels.length; i++) {
+            int px = pixels[i];
+            float[] hsv = new float[3];
+            Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
+            hsv[0] = shift ? hsv[0] + hue : hue;
+            pixels[i] = Utils.HSVToColor(Color.alpha(px), hsv); // already limit values out of ranges.
+        }
+        bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+    }
+
 
     /**
      * Apply effect on the bitmap picture passed in parameter: Only conserve specific colors , other colors become gray by minimise saturation.
@@ -122,7 +153,7 @@ public class Effects {
             if (!(Math.min(diff, 360 - diff) <= toleranceAngle)) {
                 hsv[1] = 0;
             }
-            pixels[i] = Utils.HSVToColor(hsv, Color.alpha(px));
+            pixels[i] = Utils.HSVToColor(Color.alpha(px), hsv);
         }
         bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
     }
@@ -162,7 +193,7 @@ public class Effects {
                         float[] hsv = new float[3];
                         Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
                         hsv[2] = (float) LUT[(int) (hsv[2] * 255f)] / 255f;
-                        pixels[i] = Utils.HSVToColor(hsv, Color.alpha(px));
+                        pixels[i] = Utils.HSVToColor(Color.alpha(px), hsv);
                         break;
                     case GRAY_LEVEL_NATURAL: // Decolorize the bitmap.
                         int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
@@ -195,13 +226,12 @@ public class Effects {
      */
     public static void histogramFlattening(Bitmap bmp, Picture.Histogram type, int[] histogram) {
         //Compute cumulated histogram:
-        int[] cumu = new int[histogram.length];
-        int sum = 0;
+        long[] cumu = new long[histogram.length]; //use long because with multiplication by 255 than can overflow the integer size.
+        long sum = 0;
         for (int i = 0; i < histogram.length; i++) {
             sum += histogram[i];
             cumu[i] = sum;
         }
-
 
         //apply LUT:
         int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
@@ -213,12 +243,12 @@ public class Effects {
                 case LUMINANCE:
                     float[] hsv = new float[3];
                     Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
-                    hsv[2] = (float) (cumu[(int) (hsv[2] * 255f)] * 255 / N) / 255f;
-                    pixels[i] = Utils.HSVToColor(hsv, Color.alpha(px));
+                    hsv[2] = (float) ((int) (cumu[(int) (hsv[2] * 255f)] * 255 / N)) / 255f;
+                    pixels[i] = Utils.HSVToColor(Color.alpha(px), hsv);
                     break;
                 case GRAY_LEVEL_NATURAL: // Decolorize the bitmap.
                     int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
-                    gray = cumu[gray] * 255 / N;
+                    gray = (int) (cumu[gray] * 255) / N;
                     pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray);
                     break;
             }
