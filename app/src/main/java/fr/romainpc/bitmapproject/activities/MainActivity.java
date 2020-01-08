@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         picture.setRenderScript(rs);
         pictureSample.setRenderScript(rs);
         switchRS = underLayout.findViewById(R.id.switch1);
+        switchRS.setChecked(true);
 
 
         // Seekbar listeners:
@@ -285,7 +286,10 @@ public class MainActivity extends AppCompatActivity {
                     Effects.grayLevel(picture, sB1.getProgress() / 100.0, sB2.getProgress() / 100.0, sB3.getProgress() / 100.0);
                 break;
             case HUE:
-                Effects.colorize(picture, sB1.getProgress());
+                if (renderscript)
+                    RSEffects.colorize(picture, sB1.getProgress());
+                else
+                    Effects.colorize(picture, sB1.getProgress());
                 break;
             case HUE_SHIFT:
                 Effects.colorShift(picture, sB1.getProgress());

@@ -1,7 +1,12 @@
 package fr.romainpc.bitmapproject.imageprocessing;
 
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.util.Log;
+
 import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_gray;
+import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_hue;
 
 import androidx.renderscript.Allocation;
 import androidx.renderscript.ScriptC;
@@ -38,6 +43,27 @@ public class RSEffects {
         ((ScriptC_gray) script).set_greenWeight(green);
         ((ScriptC_gray) script).set_blueWeight(blue);
         ((ScriptC_gray) script).forEach_gray(input, output);
+        output.copyTo(picture.getBitmap());
+
+        destroy();
+    }
+
+    /**
+     * Apply effect on the bitmap picture passed in parameter: colorize the picture with the specified hue.
+     *
+     * @param picture Picture to modify
+     * @param hueAngle Hue value, represented by an angle on the hue wheel [0;360]
+     */
+    public static void colorize(Picture picture, int hueAngle) {
+        if (picture.getRenderScript() == null)
+            return;
+        allocate(picture);
+
+        hueAngle = hueAngle % 360;
+
+        script = new ScriptC_hue(picture.getRenderScript());
+        ((ScriptC_hue) script).set_hueAngle(hueAngle);
+        ((ScriptC_hue) script).forEach_hue(input, output);
         output.copyTo(picture.getBitmap());
 
         destroy();
