@@ -7,6 +7,9 @@ import android.graphics.Color;
 
 import androidx.renderscript.RenderScript;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class to manage an Picture, this class wrap a Bitmap instance and several others informations about the image.
  */
@@ -23,7 +26,11 @@ public class Picture {
         /**
          * Gray level is an average of the red green and blue value of the pixel : 0.3 * R + + 0.11 * G + 0.59 * B
          */
-        GRAY_LEVEL_NATURAL
+        GRAY_LEVEL_NATURAL,
+        /**
+         * Triple histogram for each value, red, green or blue.
+         */
+        RGB
     }
 
 
@@ -210,28 +217,50 @@ public class Picture {
      * Compute an histogram.
      *
      * @param type The histogram type.
-     * @return Histogram in an array with 256 values.
+     * @return List of Histograms in arrays with 256 values.
      */
-    public int[] getHistogram(Histogram type) {
-        int[] histogram = new int[256];
+    public List<int[]> getHistograms(Histogram type) {
+        ArrayList<int[]> list = new ArrayList<>();
+
         int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
         bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-        for (int px : pixels) {
-            //compute histograms, depending the historgram type:
-            switch (type) {
-                case LUMINANCE:
-                    float[] hsv = new float[3];
-                    Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
-                    histogram[(int) (hsv[2] * 255f)]++;
-                    break;
-                case GRAY_LEVEL_NATURAL:
-                    int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
-                    histogram[gray]++;
-                    break;
-            }
-        }
+        if (type == Histogram.LUMINANCE) {
 
-        return histogram;
+            int[] histogram = new int[256];
+            for (int px : pixels) {
+                float[] hsv = new float[3];
+                Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
+                histogram[(int) (hsv[2] * 255f)]++;
+            }
+            list.add(histogram);
+
+        } else if (type == Histogram.GRAY_LEVEL_NATURAL) {
+
+            int[] histogram = new int[256];
+            for (int px : pixels) {
+                int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
+                histogram[gray]++;
+            }
+            list.add(histogram);
+
+        } else if (type == Histogram.RGB) {
+
+            int[] histogramR = new int[256];
+            int[] histogramG = new int[256];
+            int[] histogramB = new int[256];
+            for (int px : pixels) {
+                histogramR[Color.red(px)]++;
+                histogramG[Color.green(px)]++;
+                histogramB[Color.blue(px)]++;
+            }
+            list.add(histogramR);
+            list.add(histogramG);
+            list.add(histogramB);
+
+        } else {
+            return null;
+        }
+        return list;
     }
 
     /**

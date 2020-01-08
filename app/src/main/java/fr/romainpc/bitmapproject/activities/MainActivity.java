@@ -16,7 +16,6 @@ import fr.romainpc.bitmapproject.R;
 import fr.romainpc.bitmapproject.imageprocessing.Effects;
 import fr.romainpc.bitmapproject.imageprocessing.Picture;
 import fr.romainpc.bitmapproject.imageprocessing.RSEffects;
-import fr.romainpc.bitmapproject.imageprocessing.Utils;
 
 /**
  * Starting point of the application, manage all components and listeners.
@@ -297,10 +296,10 @@ public class MainActivity extends AppCompatActivity {
                 Effects.keepColor(picture, sB1.getProgress(), sB2.getProgress());
                 break;
             case LINEAR_EXTENSION:
-                Effects.linearDynamicExtension(picture, Picture.Histogram.LUMINANCE);
+                Effects.linearDynamicExtension(picture, Picture.Histogram.RGB);
                 break;
             case FLATTENING:
-                Effects.histogramFlattening(picture, Picture.Histogram.LUMINANCE);
+                Effects.histogramFlattening(picture, Picture.Histogram.RGB);
                 break;
         }
 

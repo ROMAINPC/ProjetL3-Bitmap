@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Class with methods to apply effects on Bitmap pictures.
@@ -168,102 +171,152 @@ public class Effects {
     /**
      * Aplly a linear egalization on the specified histogram of the picture.
      *
-     * @param bmp       Bitmap
-     * @param type      The type of the histogram.
-     * @param histogram The histogram array.
+     * @param bmp        Bitmap
+     * @param type       The type of the histogram.
+     * @param histograms The list of histogram arrays.
      */
-    public static void linearDynamicExtension(Bitmap bmp, Picture.Histogram type, int[] histogram) {
-        //make LUT:
-        int[] LUT = new int[histogram.length];
-        int[] extr = Utils.getHistogramMinMaxValue(histogram);
-        int min = extr[0];
-        int max = extr[1];
-        if (max != min) { // if bitmap is uniform there will be a division by zero, to avoid it and because there should be no visual effect, the algorithm is skipped.
-            for (int i = 0; i < histogram.length; i++) {
+    public static void linearDynamicExtension(Bitmap bmp, Picture.Histogram type, List<int[]> histograms) {
+        ArrayList<int[]> LUTs = new ArrayList<>();
+        for (int[] histogram : histograms) {
+            //make LUT:
+            int[] LUT = new int[histogram.length];
+            int[] extr = Utils.getHistogramMinMaxValue(histogram);
+            int min = extr[0];
+            int max = extr[1];
+            if (min == max)// if bitmap is uniform there will be a division by zero, to avoid it and because there should be no visual effect, the algorithm is skipped.
+                return;
+            for (int i = 0; i < histogram.length; i++)
                 LUT[i] = 255 * (i - min) / (max - min);
-            }
+            LUTs.add(LUT);
+        }
+        //apply LUT:
+        int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
+        bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
 
-            //apply LUT:
-            int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
-            bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+
+        if (type == Picture.Histogram.LUMINANCE) {
+
+
+            int[] LUT = LUTs.get(0);
             for (int i = 0; i < pixels.length; i++) {
                 int px = pixels[i];
-                switch (type) {
-                    case LUMINANCE:
-                        float[] hsv = new float[3];
-                        Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
-                        hsv[2] = (float) LUT[(int) (hsv[2] * 255f)] / 255f;
-                        pixels[i] = Utils.HSVToColor(Color.alpha(px), hsv);
-                        break;
-                    case GRAY_LEVEL_NATURAL: // Decolorize the bitmap.
-                        int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
-                        gray = LUT[gray];
-                        pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray);
-                        break;
-                }
-
+                float[] hsv = new float[3];
+                Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
+                hsv[2] = (float) LUT[(int) (hsv[2] * 255f)] / 255f;
+                pixels[i] = Utils.HSVToColor(Color.alpha(px), hsv);
             }
-            bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+
+
+        } else if (type == Picture.Histogram.GRAY_LEVEL_NATURAL) {
+
+
+            int[] LUT = LUTs.get(0);
+            for (int i = 0; i < pixels.length; i++) {
+                int px = pixels[i];
+                int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
+                gray = LUT[gray];
+                pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray);
+            }
+
+
+        } else if (type == Picture.Histogram.RGB) {
+            int[] LUTR = LUTs.get(0);
+            int[] LUTG = LUTs.get(1);
+            int[] LUTB = LUTs.get(2);
+            for (int i = 0; i < pixels.length; i++) {
+                int px = pixels[i];
+                pixels[i] = Color.argb(Color.alpha(px), LUTR[Color.red(px)], LUTG[Color.green(px)], LUTB[Color.blue(px)]);
+            }
+        } else {
+            return;
         }
+
+
+        bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
     }
 
     /**
-     * See {@link #linearDynamicExtension(Bitmap, Picture.Histogram, int[])} method
+     * See {@link #linearDynamicExtension(Bitmap, Picture.Histogram, List)} method
      *
      * @param p    Picture
      * @param type Histogram type to egalize.
      */
     public static void linearDynamicExtension(Picture p, Picture.Histogram type) {
-        linearDynamicExtension(p.getBitmap(), type, p.getHistogram(type));
+        linearDynamicExtension(p.getBitmap(), type, p.getHistograms(type));
     }
 
     /**
      * Flatten the histogram
      *
-     * @param bmp       Bitmap
-     * @param type      The type of the histogram.
-     * @param histogram The histogram array.
+     * @param bmp        Bitmap
+     * @param type       The type of the histogram.
+     * @param histograms The list of histogram arrays.
      */
-    public static void histogramFlattening(Bitmap bmp, Picture.Histogram type, int[] histogram) {
-        //Compute cumulated histogram:
-        long[] cumu = new long[histogram.length]; //use long because with multiplication by 255 than can overflow the integer size.
-        long sum = 0;
-        for (int i = 0; i < histogram.length; i++) {
-            sum += histogram[i];
-            cumu[i] = sum;
+    public static void histogramFlattening(Bitmap bmp, Picture.Histogram type, List<int[]> histograms) {
+        //Compute cumulated histograms:
+        ArrayList<long[]> cumus = new ArrayList<>();
+        for (int[] histogram : histograms) {
+            long[] cumu = new long[histogram.length]; //use long because with multiplication by 255 than can overflow the integer size.
+            long sum = 0;
+            for (int i = 0; i < histogram.length; i++) {
+                sum += histogram[i];
+                cumu[i] = sum;
+            }
+            cumus.add(cumu);
         }
 
         //apply LUT:
         int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
         bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
         int N = pixels.length;
-        for (int i = 0; i < pixels.length; i++) {
-            int px = pixels[i];
-            switch (type) {
-                case LUMINANCE:
-                    float[] hsv = new float[3];
-                    Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
-                    hsv[2] = (float) ((int) (cumu[(int) (hsv[2] * 255f)] * 255 / N)) / 255f;
-                    pixels[i] = Utils.HSVToColor(Color.alpha(px), hsv);
-                    break;
-                case GRAY_LEVEL_NATURAL: // Decolorize the bitmap.
-                    int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));
-                    gray = (int) (cumu[gray] * 255) / N;
-                    pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray);
-                    break;
+
+        if (type == Picture.Histogram.LUMINANCE) {
+
+
+            long[] cumu = cumus.get(0);
+            for (int i = 0; i < N; i++) {
+                int px = pixels[i];
+                float[] hsv = new float[3];
+                Utils.RGBToHSV(Color.red(px), Color.green(px), Color.blue(px), hsv);
+                hsv[2] = (float) ((int) (cumu[(int) (hsv[2] * 255f)] * 255 / N)) / 255f;
+                pixels[i] = Utils.HSVToColor(Color.alpha(px), hsv);
             }
 
+
+        } else if (type == Picture.Histogram.GRAY_LEVEL_NATURAL) {
+
+
+            long[] cumu = cumus.get(0);
+            for (int i = 0; i < N; i++) {
+                int px = pixels[i];
+                int gray = (int) (0.3 * (double) Color.red(px) + 0.59 * (double) Color.blue(px) + 0.11 * (double) Color.green(px));// Decolorize the bitmap.
+                gray = (int) (cumu[gray] * 255) / N;
+                pixels[i] = Color.argb(Color.alpha(px), gray, gray, gray);
+            }
+
+
+        } else if (type == Picture.Histogram.RGB) {
+            long[] cumuR = cumus.get(0);
+            long[] cumuG = cumus.get(1);
+            long[] cumuB = cumus.get(2);
+            for (int i = 0; i < pixels.length; i++) {
+                int px = pixels[i];
+                pixels[i] = Color.argb(Color.alpha(px), (int) (cumuR[Color.red(px)] * 255) / N, (int) (cumuG[Color.green(px)] * 255) / N, (int) (cumuB[Color.blue(px)] * 255) / N);
+            }
+        } else {
+            return;
         }
+
         bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
     }
 
     /**
-     * See {@link #histogramFlattening(Bitmap, Picture.Histogram, int[])} method
+     * See {@link #histogramFlattening(Bitmap, Picture.Histogram, List)} method
      *
      * @param p    Picture
      * @param type Histogram type to egalize.
      */
     public static void histogramFlattening(Picture p, Picture.Histogram type) {
-        histogramFlattening(p.getBitmap(), type, p.getHistogram(type));
+        histogramFlattening(p.getBitmap(), type, p.getHistograms(type));
     }
 }
