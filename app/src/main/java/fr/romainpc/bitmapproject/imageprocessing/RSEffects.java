@@ -1,13 +1,10 @@
 package fr.romainpc.bitmapproject.imageprocessing;
 
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.util.Log;
-
 import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_gray;
 import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_hue;
 import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_hue_shift;
+import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_keep_color;
 
 import androidx.renderscript.Allocation;
 import androidx.renderscript.ScriptC;
@@ -83,6 +80,27 @@ public class RSEffects {
         script = new ScriptC_hue_shift(picture.getRenderScript());
         ((ScriptC_hue_shift) script).set_hueShift(hueShift);
         ((ScriptC_hue_shift) script).forEach_hue_shift(input, output);
+        output.copyTo(picture.getBitmap());
+
+        destroy();
+    }
+
+    /**
+     * Apply effect on the bitmap picture passed in parameter: Only conserve specific colors , other colors become gray by minimise saturation.
+     *
+     * @param picture        Picture to modify
+     * @param hueAngle       Hue value to keep, represented by an angle on the hue wheel [0;360]
+     * @param toleranceAngle Colors in range "hueAngle" +/- this angle are kept.
+     */
+    public static void keepColor(Picture picture, float hueAngle, float toleranceAngle) {
+        if (picture.getRenderScript() == null)
+            return;
+        allocate(picture);
+
+        script = new ScriptC_keep_color(picture.getRenderScript());
+        ((ScriptC_keep_color) script).set_hueAngle(hueAngle);
+        ((ScriptC_keep_color) script).set_toleranceAngle(toleranceAngle);
+        ((ScriptC_keep_color) script).forEach_keep_color(input, output);
         output.copyTo(picture.getBitmap());
 
         destroy();

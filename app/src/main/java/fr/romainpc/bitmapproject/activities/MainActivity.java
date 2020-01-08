@@ -298,7 +298,10 @@ public class MainActivity extends AppCompatActivity {
                     Effects.colorShift(picture, sB1.getProgress());
                 break;
             case KEEP_COLOR:
-                Effects.keepColor(picture, sB1.getProgress(), sB2.getProgress());
+                if (renderscript)
+                    RSEffects.keepColor(picture, sB1.getProgress(), sB2.getProgress());
+                else
+                    Effects.keepColor(picture, sB1.getProgress(), sB2.getProgress());
                 break;
             case LINEAR_EXTENSION:
                 Effects.linearDynamicExtension(picture, Picture.Histogram.LUMINANCE);
