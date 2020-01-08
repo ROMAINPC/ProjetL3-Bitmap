@@ -7,6 +7,7 @@ import android.util.Log;
 
 import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_gray;
 import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_hue;
+import fr.romainpc.bitmapproject.imageprocessing.rsclass.ScriptC_hue_shift;
 
 import androidx.renderscript.Allocation;
 import androidx.renderscript.ScriptC;
@@ -51,7 +52,7 @@ public class RSEffects {
     /**
      * Apply effect on the bitmap picture passed in parameter: colorize the picture with the specified hue.
      *
-     * @param picture Picture to modify
+     * @param picture  Picture to modify
      * @param hueAngle Hue value, represented by an angle on the hue wheel [0;360]
      */
     public static void colorize(Picture picture, int hueAngle) {
@@ -59,11 +60,29 @@ public class RSEffects {
             return;
         allocate(picture);
 
-        hueAngle = hueAngle % 360;
-
         script = new ScriptC_hue(picture.getRenderScript());
         ((ScriptC_hue) script).set_hueAngle(hueAngle);
         ((ScriptC_hue) script).forEach_hue(input, output);
+        output.copyTo(picture.getBitmap());
+
+        destroy();
+    }
+
+    /**
+     * Apply effect on the bitmap picture passed in parameter: Translate the hue of pixels.
+     *
+     * @param picture  Picture to modify
+     * @param hueShift Hue value, represented by an angle on the hue wheel [0;360]
+     */
+    public static void colorShift(Picture picture, int hueShift) {
+        if (picture.getRenderScript() == null)
+            return;
+        allocate(picture);
+
+
+        script = new ScriptC_hue_shift(picture.getRenderScript());
+        ((ScriptC_hue_shift) script).set_hueShift(hueShift);
+        ((ScriptC_hue_shift) script).forEach_hue_shift(input, output);
         output.copyTo(picture.getBitmap());
 
         destroy();

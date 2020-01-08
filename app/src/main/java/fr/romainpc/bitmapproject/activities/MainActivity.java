@@ -292,7 +292,10 @@ public class MainActivity extends AppCompatActivity {
                     Effects.colorize(picture, sB1.getProgress());
                 break;
             case HUE_SHIFT:
-                Effects.colorShift(picture, sB1.getProgress());
+                if (renderscript)
+                    RSEffects.colorShift(picture, sB1.getProgress());
+                else
+                    Effects.colorShift(picture, sB1.getProgress());
                 break;
             case KEEP_COLOR:
                 Effects.keepColor(picture, sB1.getProgress(), sB2.getProgress());
