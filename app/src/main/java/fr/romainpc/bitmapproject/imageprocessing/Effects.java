@@ -301,7 +301,7 @@ public class Effects {
             long[] cumuB = cumus.get(2);
             for (int i = 0; i < pixels.length; i++) {
                 int px = pixels[i];
-                pixels[i] = Color.argb(Color.alpha(px), (int) (cumuR[Color.red(px)] * 255) / N, (int) (cumuG[Color.green(px)] * 255) / N, (int) (cumuB[Color.blue(px)] * 255) / N);
+                pixels[i] = Color.argb(Color.alpha(px), (int) ((cumuR[Color.red(px)] * 255L) / N), (int) ((cumuG[Color.green(px)] * 255L) / N), (int) ((cumuB[Color.blue(px)] * 255L) / N));
             }
         } else {
             return;
