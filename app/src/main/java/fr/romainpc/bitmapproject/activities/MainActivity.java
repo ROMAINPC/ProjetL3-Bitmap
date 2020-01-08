@@ -1,7 +1,6 @@
 package fr.romainpc.bitmapproject.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -277,7 +276,6 @@ public class MainActivity extends AppCompatActivity {
      * @param renderscript  Use or not RenderScript accélération.
      */
     private void applyEffect(Picture picture, Effects.EffectType currentEffect, boolean renderscript) {
-
         //Apply effect:
         switch (currentEffect) {
             case GRAY:
@@ -296,10 +294,10 @@ public class MainActivity extends AppCompatActivity {
                 Effects.keepColor(picture, sB1.getProgress(), sB2.getProgress());
                 break;
             case LINEAR_EXTENSION:
-                Effects.linearDynamicExtension(picture, Picture.Histogram.RGB);
+                Effects.linearDynamicExtension(picture, Picture.Histogram.LUMINANCE);
                 break;
             case FLATTENING:
-                Effects.histogramFlattening(picture, Picture.Histogram.RGB);
+                Effects.histogramFlattening(picture, Picture.Histogram.LUMINANCE);
                 break;
         }
 
