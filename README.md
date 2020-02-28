@@ -16,3 +16,5 @@ This application offer the following effects:
 * Convolution blurring
 
 ## For more informations read this report (french): [Report.pdf](Report.pdf)
+
+# To see the rest of the project go to this repository : [PIMP](https://github.com/picachoc/pimp-android)
